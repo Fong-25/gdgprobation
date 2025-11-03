@@ -1,0 +1,76 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int       @id @default(autoincrement())
+  username  String    @unique @db.VarChar(100)
+  email     String    @unique @db.VarChar(255)
+  password  String    @db.VarChar(255)
+  createdAt DateTime  @default(now()) @map("created_at")
+  
+  thoughts  Thought[]
+  moods     Mood[]
+  habits    Habit[]
+
+  @@map("users")
+}
+
+model Thought {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @map("user_id")
+  text      String   @db.Text
+  createdAt DateTime @default(now()) @map("created_at")
+  
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("thoughts")
+}
+
+model Mood {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @map("user_id")
+  moodX     Float    @map("mood_x") @db.Real
+  moodY     Float    @map("mood_y") @db.Real
+  createdAt DateTime @default(now()) @map("created_at")
+  
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("moods")
+}
+
+model Habit {
+  id         Int         @id @default(autoincrement())
+  userId     Int         @map("user_id")
+  name       String      @db.Text
+  frequency  String      @default("per_day") @db.VarChar(20)
+  isTracked  Boolean     @map("is_tracked")
+  createdAt  DateTime    @default(now()) @map("created_at")
+  
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  habitLogs  HabitLog[]
+
+  @@map("habits")
+}
+
+model HabitLog {
+  id       Int      @id @default(autoincrement())
+  habitId  Int      @map("habit_id")
+  progress Decimal  @db.Decimal
+  date     DateTime @db.Date
+  
+  habit    Habit    @relation(fields: [habitId], references: [id], onDelete: Cascade)
+
+  @@map("habit_logs")
+}
