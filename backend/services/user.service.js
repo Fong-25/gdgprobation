@@ -1,7 +1,7 @@
 import prisma from '../config/prisma.js'
 
 export const createUser = async ({ username, email, password }) => {
-    const user = prisma.user.create({
+    const user = await prisma.user.create({
         data: {
             username,
             email,
@@ -23,7 +23,7 @@ export const validateEmail = (email) => {
 }
 
 export const getUserByEmail = async (email) => {
-    const user = prisma.user.findUnique({
+    const user = await prisma.user.findUnique({
         where: {
             email,
         },
