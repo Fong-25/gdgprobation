@@ -5,6 +5,7 @@ import { connectDB } from './config/db.js'
 import cookieParser from 'cookie-parser'
 import path from 'path'
 import authRoutes from './routes/auth.route.js'
+import habitRoutes from './routes/habit.route.js'
 
 dotenv.config()
 
@@ -23,6 +24,7 @@ app.get('/', (req, res) => {
 })
 
 app.use('/api/auth', authRoutes)
+app.use('/api/habits', habitRoutes)
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
