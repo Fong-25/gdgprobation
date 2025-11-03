@@ -57,6 +57,10 @@ export const getHabit = async (req, res) => {
     try {
         const { id } = req.params
         const habit = await getHabitById(parseInt(id))
+        const userId = req.userId
+        if (!habit) {
+            return res.status(404).json({ message: 'Habit not found' })
+        }
         // Check if habit belongs to user
         if (habit.userId !== userId) {
             return res.status(403).json({ message: 'Access denied' })
