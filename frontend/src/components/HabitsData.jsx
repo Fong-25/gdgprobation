@@ -8,6 +8,7 @@ export default function HabitsData() {
 	const [currentWeekOffset, setCurrentWeekOffset] = useState(0);
 	const [editingHabit, setEditingHabit] = useState(null);
 	const [editName, setEditName] = useState("");
+	const [updatingProgress, setUpdatingProgress] = useState(null)
 
 	const daysOfWeek = [
 		{ short: "Mon", full: "Monday" },
@@ -57,19 +58,95 @@ export default function HabitsData() {
 
 	const fetchHabits = async () => {
 		try {
-			const res = await fetch(`${import.meta.env.VITE_API_URL}/api/habits`, {
-				method: "GET",
-				credentials: "include",
+			// Fetch habits with progress for each day of the week
+			const habitsWithProgress = await Promise.all(
+				weekDates.map(async (date) => {
+					const dateStr = date.toISOString().split('T')[0];
+					const res = await fetch(`${import.meta.env.VITE_API_URL}/api/progress?date=${dateStr}`, {
+						method: "GET",
+						credentials: "include",
+					}
+					);
+					const data = await res.json();
+					return {
+						date: dateStr,
+						habits: res.ok ? data.habits : [],
+					};
+				})
+			);
+
+			// Merge habits data by habit ID
+			const habitsMap = new Map();
+			habitsWithProgress.forEach(({ date, habits: dayHabits }) => {
+				dayHabits.forEach((habit) => {
+					if (!habitsMap.has(habit.id)) {
+						habitsMap.set(habit.id, {
+							...habit,
+							progressByDate: {},
+						});
+					}
+					habitsMap.get(habit.id).progressByDate[date] = habit.progress;
+				});
 			});
-			const data = await res.json();
-			if (res.ok) {
-				console.log("Fetched habits:", data);
-				setHabits(Array.isArray(data.habits) ? data.habits : []);
-			}
+
+			setHabits(Array.from(habitsMap.values()));
 		} catch (error) {
 			console.error("Fetch habits error:", error);
 		} finally {
 			setLoading(false);
+		}
+	};
+
+	const updateProgress = async (habitId, dayIndex) => {
+		const key = `${habitId}-${dayIndex}`
+		setUpdatingProgress(key)
+
+		const date = weekDates[dayIndex];
+		const dateStr = date.toISOString().split('T')[0];
+		const habit = habits.find(h => h.id === habitId);
+		const currentProgress = habit?.progressByDate?.[dateStr] || 0;
+
+		// Cycle through 0 -> 1/3 -> 2/3 -> 1 -> 0
+		const progressLevels = [0, 1 / 3, 2 / 3, 1];
+		const currentIndex = progressLevels.findIndex(p => Math.abs(p - currentProgress) < 0.001);
+		const nextProgress = progressLevels[(currentIndex + 1) % 4];
+
+		try {
+			const res = await fetch(`${import.meta.env.VITE_API_URL}/api/progress`, {
+				method: "POST",
+				credentials: "include",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({
+					habitId,
+					progress: nextProgress,
+					date: dateStr,
+				}),
+			}
+			);
+
+			if (res.ok) {
+				// Update local state
+				setHabits(habits.map(h => {
+					if (h.id === habitId) {
+						return {
+							...h,
+							progressByDate: {
+								...h.progressByDate,
+								[dateStr]: nextProgress,
+							},
+						};
+					}
+					return h;
+				}));
+				toast.success("Progress updated")
+			} else {
+				toast.error("Failed to update progress");
+			}
+		} catch (error) {
+			console.error("Update progress error:", error);
+			toast.error("Something went wrong");
+		} finally {
+			setUpdatingProgress(null)
 		}
 	};
 
@@ -86,8 +163,17 @@ export default function HabitsData() {
 	};
 
 	const getCompletionLevel = (habitId, dayIndex) => {
-		const key = `${habitId}-${dayIndex}-${currentWeekOffset}`;
-		return completionLevels[key] || 0;
+		const date = weekDates[dayIndex];
+		const dateStr = date.toISOString().split('T')[0];
+		const habit = habits.find(h => h.id === habitId);
+		const progress = habit?.progressByDate?.[dateStr] || 0;
+
+		// Convert progress to level (0, 1, 2, 3)
+		if (progress === 0) return 0;
+		if (Math.abs(progress - 1 / 3) < 0.001) return 1;
+		if (Math.abs(progress - 2 / 3) < 0.001) return 2;
+		if (Math.abs(progress - 1) < 0.001) return 3;
+		return 0;
 	};
 
 	const getCompletionColor = (level) => {
@@ -178,7 +264,7 @@ export default function HabitsData() {
 	return (
 		<div className="max-w-7xl mx-auto">
 			{/* Header Section */}
-			<div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-xl mb-6 shadow-sm">
+			<div className="bg-linear-to-r from-blue-50 to-indigo-50 p-6 rounded-xl mb-6 shadow-sm">
 				<div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
 					<div>
 						<h3 className="text-2xl font-bold text-gray-800 mb-1">
@@ -317,11 +403,10 @@ export default function HabitsData() {
 									return (
 										<div key={index} className="flex flex-col items-center">
 											<div
-												className={`w-16 h-16 flex flex-col items-center justify-center font-bold rounded-xl border-2 transition-all ${
-													isToday
-														? "bg-blue-500 text-white border-blue-600 shadow-lg scale-105"
-														: "bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100"
-												}`}
+												className={`w-16 h-16 flex flex-col items-center justify-center font-bold rounded-xl border-2 transition-all ${isToday
+													? "bg-blue-500 text-white border-blue-600 shadow-lg scale-105"
+													: "bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100"
+													}`}
 												title={`${day.full} - ${date.toLocaleDateString()}`}
 											>
 												<span className="text-[10px] font-medium opacity-80">
@@ -344,9 +429,8 @@ export default function HabitsData() {
 								{habits.map((habit, habitIndex) => (
 									<div
 										key={habit.id}
-										className={`flex items-center gap-3 p-4 rounded-xl transition-all ${
-											habitIndex % 2 === 0 ? "bg-gray-50" : "bg-white"
-										} hover:bg-blue-50 hover:shadow-sm border border-transparent hover:border-blue-200`}
+										className={`flex items-center gap-3 p-4 rounded-xl transition-all ${habitIndex % 2 === 0 ? "bg-gray-50" : "bg-white"
+											} hover:bg-blue-50 hover:shadow-sm border border-transparent hover:border-blue-200`}
 									>
 										{editingHabit === habit.id ? (
 											<div className="w-52 flex items-center gap-2">
@@ -383,36 +467,43 @@ export default function HabitsData() {
 											return (
 												<button
 													key={dayIndex}
-													onClick={() => cycleCompletion(habit.id, dayIndex)}
+													onClick={() => updateProgress(habit.id, dayIndex)}
+													disabled={updatingProgress === `${habit.id}-${dayIndex}`}
 													className={`w-16 h-16 flex items-center justify-center rounded-xl border-2 transition-all duration-200 hover:scale-110 active:scale-95 ${getCompletionColor(
 														level
 													)} shadow-sm hover:shadow-md`}
 													title={`${day.full} - Level ${level}/3 (Click to cycle)`}
 												>
-													{level === 3 && (
-														<svg
-															className="w-9 h-9 text-green-700"
-															fill="none"
-															stroke="currentColor"
-															viewBox="0 0 24 24"
-														>
-															<path
-																strokeLinecap="round"
-																strokeLinejoin="round"
-																strokeWidth={3}
-																d="M5 13l4 4L19 7"
-															/>
-														</svg>
-													)}
-													{level === 2 && (
-														<span className="text-3xl text-yellow-700 font-bold">
-															−
-														</span>
-													)}
-													{level === 1 && (
-														<span className="text-3xl text-red-600 font-bold">
-															✕
-														</span>
+													{updatingProgress === `${habit.id}-${dayIndex}` ? (
+														<div className="animate-spin h-6 w-6 border-2 border-gray-600 border-t-transparent rounded-full"></div>
+													) : (
+														<>
+															{level === 3 && (
+																<svg
+																	className="w-9 h-9 text-green-700"
+																	fill="none"
+																	stroke="currentColor"
+																	viewBox="0 0 24 24"
+																>
+																	<path
+																		strokeLinecap="round"
+																		strokeLinejoin="round"
+																		strokeWidth={3}
+																		d="M5 13l4 4L19 7"
+																	/>
+																</svg>
+															)}
+															{level === 2 && (
+																<span className="text-3xl text-yellow-700 font-bold">
+																	−
+																</span>
+															)}
+															{level === 1 && (
+																<span className="text-3xl text-red-600 font-bold">
+																	✕
+																</span>
+															)}
+														</>
 													)}
 												</button>
 											);

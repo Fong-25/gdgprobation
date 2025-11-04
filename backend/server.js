@@ -8,6 +8,7 @@ import authRoutes from './routes/auth.route.js'
 import habitRoutes from './routes/habit.route.js'
 import thoughtRoutes from './routes/thought.route.js'
 import moodRoutes from './routes/mood.route.js'
+import progressRoutes from './routes/progress.route.js'
 
 dotenv.config()
 
@@ -29,6 +30,7 @@ app.use('/api/auth', authRoutes)
 app.use('/api/habits', habitRoutes)
 app.use('/api/thoughts', thoughtRoutes)
 app.use('/api/moods', moodRoutes)
+app.use('/api/progress', progressRoutes)
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
