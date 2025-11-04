@@ -4,6 +4,8 @@ export default function Home() {
 	return (
 		<div>
 			<Header />
+			<h2 className="text-xl font-semibold">Welcome to the Home page</h2>
+			<p className="mt-2 text-gray-700">This is the public home view.</p>
 		</div>
 	);
 }
