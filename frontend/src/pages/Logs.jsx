@@ -1,21 +1,20 @@
-import HabitsForm from "../components/HabitsForm";
+import { Outlet } from "react-router-dom";
 import Header from "../components/Header";
+import Sidebar from "../components/Sidebar";
 
 export default function Logs() {
 	return (
 		<div>
 			<Header />
-			<h2 className="text-xl font-semibold">Logs Page</h2>
-			<section className="mt-4">
-				<h3>Moods</h3>
-			</section>
-			<section className="mt-4">
-				<h3>Thoughts</h3>
-			</section>
-			<section className="mt-4">
-				<h3>Habits</h3>
-				<HabitsForm />
-			</section>
+			<div className="flex">
+				<Sidebar mode="forms" />
+				<main className="flex-1 p-6">
+					<h2 className="text-xl font-semibold mb-4">Logs</h2>
+
+					{/* Nested route content will render here */}
+					<Outlet />
+				</main>
+			</div>
 		</div>
 	);
 }
