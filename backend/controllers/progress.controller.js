@@ -32,7 +32,9 @@ export const addHabitProgresses = async (req, res) => {
         }
 
         // Parse date string to Date object
-        const parsedDate = new Date(date)
+        const [year, month, day] = date.split('-')
+        const parsedDate = new Date(Date.UTC(year, month - 1, day))
+        parsedDate.setUTCHours(0, 0, 0, 0) // ensure clean midnight UTC
         if (isNaN(parsedDate.getTime())) {
             return res.status(400).json({ message: 'Invalid date format' })
         }
@@ -72,8 +74,18 @@ export const listHabitProgresses = async (req, res) => {
         const { date } = req.query
 
         // Use today's date if not provided
-        const queryDate = date ? new Date(date) : new Date()
-        queryDate.setHours(0, 0, 0, 0)
+        let queryDate
+        if (date) {
+            const [y, m, d] = date.split('-')
+            queryDate = new Date(Date.UTC(y, m - 1, d))
+        } else {
+            queryDate = new Date()
+            queryDate.setUTCHours(0, 0, 0, 0)
+            // Truncate to UTC midnight of today
+            const offset = queryDate.getTimezoneOffset()
+            queryDate = new Date(queryDate.getTime() - offset * 60 * 1000)
+        }
+        queryDate = new Date(queryDate.toISOString().split('T')[0])
 
         if (isNaN(queryDate.getTime())) {
             return res.status(400).json({ message: 'Invalid date format' })
