@@ -33,7 +33,11 @@ export default function App() {
 				<Routes>
 					<Route path="/login" element={<Login />} />
 					<Route path="/signup" element={<Signup />} />
-					<Route path="/dashboard" element={<Dashboard />}>
+					<Route path="/dashboard" element={
+						<ProtectedRoute>
+							<Dashboard />
+						</ProtectedRoute>
+					}>
 						<Route
 							index
 							element={<Navigate to="/dashboard/thoughts" replace />}
@@ -42,13 +46,27 @@ export default function App() {
 						<Route path="moods" element={<MoodsData />} />
 						<Route path="habits" element={<HabitsData />} />
 					</Route>
-					<Route path="/logs" element={<Logs />}>
+					<Route path="/logs" element={
+						<ProtectedRoute>
+							<Logs />
+						</ProtectedRoute>
+					}>
 						<Route index element={<Navigate to="/logs/thoughts" replace />} />
 						<Route path="thoughts" element={<ThoughtsForm />} />
 						<Route path="moods" element={<MoodsForm />} />
 						<Route path="habits" element={<HabitsForm />} />
 					</Route>
-					<Route path="/home" element={<Home />} />
+					<Route path="/home" element={
+						<ProtectedRoute >
+							<Home />
+						</ProtectedRoute>
+					}
+					/>
+					<Route path="/" element={
+						<ProtectedRoute >
+							<Home />
+						</ProtectedRoute>
+					} />
 				</Routes>
 			</Router>
 		</div>
