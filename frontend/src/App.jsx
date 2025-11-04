@@ -6,12 +6,14 @@ import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
 import Home from "./pages/Home";
 import Logs from "./pages/Logs";
+import { Toaster } from "react-hot-toast";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 
 export default function App() {
 	return (
 		<div>
+			<Toaster position="top-right" />
 			<Router>
 				<Routes>
 					<Route path="/login" element={<Login />} />
