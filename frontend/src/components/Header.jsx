@@ -7,8 +7,7 @@ export default function Header() {
 	const [username, setUsername] = useState("");
 
 	const linkClass = (isActive) =>
-		`mr-6 px-3 py-2 rounded ${
-			isActive ? "bg-white text-black" : "text-white/90 hover:text-white"
+		`mr-6 px-3 py-2 rounded ${isActive ? "bg-white text-black" : "text-white/90 hover:text-white"
 		}`;
 
 	useEffect(() => {
@@ -64,9 +63,9 @@ export default function Header() {
 
 			<div className="flex items-center gap-4">
 				<nav>
-					<NavLink to="/home" className={({ isActive }) => linkClass(isActive)}>
+					{/* <NavLink to="/home" className={({ isActive }) => linkClass(isActive)}>
 						Home
-					</NavLink>
+					</NavLink> */}
 					<NavLink
 						to="/dashboard"
 						className={({ isActive }) => linkClass(isActive)}

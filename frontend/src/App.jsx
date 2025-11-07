@@ -59,15 +59,15 @@ export default function App() {
 						<Route path="moods" element={<MoodsLogs />} />
 						<Route path="habits" element={<HabitsLogs />} />
 					</Route>
-					<Route path="/home" element={
+					{/* <Route path="/home" element={
 						<ProtectedRoute >
 							<Home />
 						</ProtectedRoute>
 					}
-					/>
+					/> */}
 					<Route path="/" element={
 						<ProtectedRoute >
-							<Home />
+							<Dashboard />
 						</ProtectedRoute>
 					} />
 				</Routes>
