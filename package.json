@@ -1,0 +1,26 @@
+{
+  "name": "gdgprobation",
+  "version": "1.0.0",
+  "description": "Eunoia is a full-stack web application designed for personal wellness and self-care. It allows users to track their habits, log their moods, and record their thoughts, providing powerful visualizations to help them understand their mental and emotional patterns.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "install:frontend": "cd frontend && npm install",
+    "install:backend": "cd backend && npm install",
+    "install:all": "npm run install:frontend && npm run install:backend",
+    "build:frontend": "cd frontend && npm run build",
+    "build": "npm run install:all && npm run build:frontend",
+    "start": "cd backend && npx prisma generate && node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Fong-25/gdgprobation.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Fong-25/gdgprobation/issues"
+  },
+  "homepage": "https://github.com/Fong-25/gdgprobation#readme"
+}
