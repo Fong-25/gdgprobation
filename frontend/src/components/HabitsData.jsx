@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
+import HabitForm from "./HabitForm";
 
 export default function HabitsData() {
 	const [habits, setHabits] = useState([]);
@@ -179,15 +180,15 @@ export default function HabitsData() {
 	const getCompletionColor = (level) => {
 		switch (level) {
 			case 0:
-				return "bg-gray-200 border-gray-300";
+				return "bg-white border-gray-300";
 			case 1:
-				return "bg-red-300 border-red-400";
+				return "bg-gray-200 border-gray-400";
 			case 2:
-				return "bg-yellow-300 border-yellow-400";
+				return "bg-gray-400 border-gray-500";
 			case 3:
-				return "bg-green-400 border-green-500";
+				return "bg-gray-700 border-black";
 			default:
-				return "bg-gray-200 border-gray-300";
+				return "bg-white border-gray-300";
 		}
 	};
 
@@ -257,6 +258,8 @@ export default function HabitsData() {
 		}
 	};
 
+	// Add habit form moved to separate component
+
 	if (loading) {
 		return <div className="text-gray-500">Loading habits...</div>;
 	}
@@ -264,24 +267,24 @@ export default function HabitsData() {
 	return (
 		<div className="max-w-7xl mx-auto">
 			{/* Header Section */}
-			<div className="bg-linear-to-r from-blue-50 to-indigo-50 p-6 rounded-xl mb-6 shadow-sm">
+			<div className="bg-white p-6 rounded-lg mb-6 border border-black">
 				<div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
 					<div>
-						<h3 className="text-2xl font-bold text-gray-800 mb-1">
+						<h3 className="text-2xl font-bold text-black mb-1">
 							Your Habits
 						</h3>
-						<p className="text-sm text-gray-600">Track your daily progress</p>
+						<p className="text-sm text-gray-700">Track your daily progress</p>
 					</div>
 
 					{/* Week Navigation */}
-					<div className="flex items-center gap-3 bg-white px-4 py-2 rounded-lg shadow-sm">
+					<div className="flex items-center gap-3 bg-white px-4 py-2 rounded border border-black">
 						<button
 							onClick={() => setCurrentWeekOffset(currentWeekOffset - 1)}
-							className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+							className="p-2 hover:bg-gray-100 rounded transition-colors"
 							title="Previous week"
 						>
 							<svg
-								className="w-5 h-5 text-gray-600"
+								className="w-5 h-5 text-black"
 								fill="none"
 								stroke="currentColor"
 								viewBox="0 0 24 24"
@@ -295,22 +298,22 @@ export default function HabitsData() {
 							</svg>
 						</button>
 						<div className="text-center min-w-[220px]">
-							<div className="text-sm font-semibold text-gray-700">
+							<div className="text-sm font-semibold text-black">
 								{getWeekRange()}
 							</div>
 							{isCurrentWeek && (
-								<span className="text-xs text-blue-600 font-medium">
+								<span className="text-xs text-gray-700 font-medium">
 									Current Week
 								</span>
 							)}
 						</div>
 						<button
 							onClick={() => setCurrentWeekOffset(currentWeekOffset + 1)}
-							className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+							className="p-2 hover:bg-gray-100 rounded transition-colors"
 							title="Next week"
 						>
 							<svg
-								className="w-5 h-5 text-gray-600"
+								className="w-5 h-5 text-black"
 								fill="none"
 								stroke="currentColor"
 								viewBox="0 0 24 24"
@@ -326,7 +329,7 @@ export default function HabitsData() {
 						{!isCurrentWeek && (
 							<button
 								onClick={() => setCurrentWeekOffset(0)}
-								className="ml-2 px-3 py-1.5 bg-blue-500 text-white hover:bg-blue-600 rounded-lg transition-colors text-sm font-medium"
+								className="ml-2 px-3 py-1.5 bg-black text-white hover:opacity-90 rounded transition-colors text-sm font-medium"
 							>
 								Today
 							</button>
@@ -335,10 +338,12 @@ export default function HabitsData() {
 				</div>
 			</div>
 
-			{habits.length === 0 ? (
-				<div className="bg-white border-2 border-dashed border-gray-300 rounded-xl p-12 text-center">
+			<div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+				<div className="lg:col-span-2">
+					{habits.length === 0 ? (
+				<div className="bg-white border-2 border-dashed border-black rounded-lg p-12 text-center">
 					<svg
-						className="w-16 h-16 mx-auto text-gray-400 mb-4"
+						className="w-16 h-16 mx-auto text-gray-700 mb-4"
 						fill="none"
 						stroke="currentColor"
 						viewBox="0 0 24 24"
@@ -350,212 +355,137 @@ export default function HabitsData() {
 							d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
 						/>
 					</svg>
-					<p className="text-gray-500 text-lg mb-2">No habits yet</p>
-					<p className="text-gray-400 text-sm">
-						Start building good habits by adding them in the Logs section!
+					<p className="text-gray-700 text-lg mb-2">No habits yet</p>
+					<p className="text-gray-600 text-sm">
+						Start building good habits by adding them below!
 					</p>
 				</div>
-			) : (
-				<div className="bg-white rounded-xl shadow-md overflow-hidden">
+					) : (
+				<div className="bg-white rounded-lg border border-black overflow-hidden">
 					{/* Legend */}
-					<div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
+					<div className="bg-white px-6 py-4 border-b border-black">
 						<div className="flex flex-wrap items-center gap-6 text-sm">
-							<span className="font-semibold text-gray-700">
+							<span className="font-semibold text-black">
 								Completion Levels:
 							</span>
 							<div className="flex items-center gap-2">
-								<div className="w-7 h-7 bg-gray-100 border-2 border-gray-300 rounded-lg"></div>
-								<span className="text-gray-600">None</span>
+								<div className="w-7 h-7 bg-white border-2 border-gray-300 rounded"></div>
+								<span className="text-gray-700">None</span>
 							</div>
 							<div className="flex items-center gap-2">
-								<div className="w-7 h-7 bg-red-100 border-2 border-red-300 rounded-lg flex items-center justify-center">
-									<span className="text-red-600 text-lg">✕</span>
+								<div className="w-7 h-7 bg-gray-200 border-2 border-gray-400 rounded flex items-center justify-center">
+									<span className="text-gray-600 text-lg">✕</span>
 								</div>
-								<span className="text-gray-600">Low</span>
+								<span className="text-gray-700">Low</span>
 							</div>
 							<div className="flex items-center gap-2">
-								<div className="w-7 h-7 bg-yellow-100 border-2 border-yellow-300 rounded-lg flex items-center justify-center">
-									<span className="text-yellow-600 text-lg">−</span>
+								<div className="w-7 h-7 bg-gray-400 border-2 border-gray-500 rounded flex items-center justify-center">
+									<span className="text-gray-700 text-lg">−</span>
 								</div>
-								<span className="text-gray-600">Medium</span>
+								<span className="text-gray-700">Medium</span>
 							</div>
 							<div className="flex items-center gap-2">
-								<div className="w-7 h-7 bg-green-100 border-2 border-green-300 rounded-lg flex items-center justify-center">
-									<span className="text-green-600 text-lg">✓</span>
+								<div className="w-7 h-7 bg-gray-700 border-2 border-black rounded flex items-center justify-center">
+									<span className="text-white text-lg">✓</span>
 								</div>
-								<span className="text-gray-600">High</span>
+								<span className="text-gray-700">High</span>
 							</div>
 						</div>
 					</div>
 
 					{/* Table Content */}
-					<div className="overflow-x-auto">
-						<div className="p-6">
-							{/* Header row with days */}
-							<div className="flex items-center gap-3 mb-4 pb-3 border-b-2 border-gray-200">
-								<div className="w-52 text-sm font-semibold text-gray-700 pl-2">
-									Habit Name
-								</div>
-								{daysOfWeek.map((day, index) => {
-									const date = weekDates[index];
-									const isToday =
-										date.toDateString() === new Date().toDateString();
-									return (
-										<div key={index} className="flex flex-col items-center">
-											<div
-												className={`w-16 h-16 flex flex-col items-center justify-center font-bold rounded-xl border-2 transition-all ${isToday
-													? "bg-blue-500 text-white border-blue-600 shadow-lg scale-105"
-													: "bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100"
-													}`}
-												title={`${day.full} - ${date.toLocaleDateString()}`}
-											>
-												<span className="text-[10px] font-medium opacity-80">
-													{day.short}
-												</span>
-												<span className="text-xl font-bold">
-													{date.getDate()}
-												</span>
-											</div>
-										</div>
-									);
-								})}
-								<div className="w-16 text-[10px] font-semibold text-gray-600 text-center uppercase tracking-wide">
-									Actions
-								</div>
-							</div>
-
-							{/* Habit rows */}
-							<div className="space-y-2">
+						<div className="overflow-x-auto">
+							<table className="min-w-full table-auto">
+							<thead>
+								<tr className="border-b-2 border-black">
+									<th className="text-left text-sm font-semibold text-black pl-4 py-3">Habit Name</th>
+									{daysOfWeek.map((day, index) => {
+										const date = weekDates[index];
+										const isToday = date.toDateString() === new Date().toDateString();
+										return (
+											<th key={day.short} className="py-2">
+												<div className={`mx-auto w-16 h-16 flex flex-col items-center justify-center font-bold rounded border-2 ${isToday ? "bg-black text-white border-black shadow-lg" : "bg-white text-black border-gray-400"}`} title={`${day.full} - ${date.toLocaleDateString()}`}>
+													<span className="text-[10px] font-medium opacity-80">{day.short}</span>
+													<span className="text-xl font-bold">{date.getDate()}</span>
+												</div>
+											</th>
+										);
+									})}
+									<th className="w-28 text-center text-[10px] font-semibold text-black uppercase tracking-wide">Actions</th>
+								</tr>
+							</thead>
+							<tbody>
 								{habits.map((habit, habitIndex) => (
-									<div
-										key={habit.id}
-										className={`flex items-center gap-3 p-4 rounded-xl transition-all ${habitIndex % 2 === 0 ? "bg-gray-50" : "bg-white"
-											} hover:bg-blue-50 hover:shadow-sm border border-transparent hover:border-blue-200`}
-									>
-										{editingHabit === habit.id ? (
-											<div className="w-52 flex items-center gap-2">
+									<tr key={habit.id} className={`${habitIndex % 2 === 0 ? "bg-white" : "bg-gray-50"} hover:bg-gray-100 border-b border-gray-200`}>
+										<td className="pl-4 py-4 align-middle overflow-visible">
+											{editingHabit === habit.id ? (
 												<input
 													type="text"
 													value={editName}
 													onChange={(e) => setEditName(e.target.value)}
-													className="flex-1 px-3 py-2 border-2 border-blue-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+													onKeyDown={(e) => {
+														if (e.key === 'Enter') {
+															e.preventDefault();
+															saveEdit(habit.id);
+														}
+													}}
+													onBlur={cancelEdit}
+													className="px-3 py-2 border-2 border-black rounded text-sm focus:outline-none focus:ring-2 focus:ring-gray-500 bg-white"
+													style={{ width: `${Math.min(Math.max((editName?.length || 0) + 2, 12), 40)}ch` }}
 													autoFocus
 												/>
-												<button
-													onClick={() => saveEdit(habit.id)}
-													className="px-3 py-2 bg-green-500 text-white rounded-lg text-sm hover:bg-green-600 font-medium"
-												>
-													✓
-												</button>
-												<button
-													onClick={cancelEdit}
-													className="px-3 py-2 bg-gray-400 text-white rounded-lg text-sm hover:bg-gray-500 font-medium"
-												>
-													✕
-												</button>
-											</div>
-										) : (
-											<div
-												className="w-52 text-gray-800 font-medium truncate pl-2"
-												title={habit.name}
-											>
-												{habit.name}
-											</div>
-										)}
+											) : (
+												<div className="max-w-[40vw] lg:max-w-[28rem] text-black font-medium truncate" title={habit.name}>{habit.name}</div>
+											)}
+										</td>
 										{daysOfWeek.map((day, dayIndex) => {
 											const level = getCompletionLevel(habit.id, dayIndex);
 											return (
-												<button
-													key={dayIndex}
-													onClick={() => updateProgress(habit.id, dayIndex)}
-													disabled={updatingProgress === `${habit.id}-${dayIndex}`}
-													className={`w-16 h-16 flex items-center justify-center rounded-xl border-2 transition-all duration-200 hover:scale-110 active:scale-95 ${getCompletionColor(
-														level
-													)} shadow-sm hover:shadow-md`}
-													title={`${day.full} - Level ${level}/3 (Click to cycle)`}
-												>
-													{updatingProgress === `${habit.id}-${dayIndex}` ? (
-														<div className="animate-spin h-6 w-6 border-2 border-gray-600 border-t-transparent rounded-full"></div>
-													) : (
-														<>
-															{level === 3 && (
-																<svg
-																	className="w-9 h-9 text-green-700"
-																	fill="none"
-																	stroke="currentColor"
-																	viewBox="0 0 24 24"
-																>
-																	<path
-																		strokeLinecap="round"
-																		strokeLinejoin="round"
-																		strokeWidth={3}
-																		d="M5 13l4 4L19 7"
-																	/>
-																</svg>
-															)}
-															{level === 2 && (
-																<span className="text-3xl text-yellow-700 font-bold">
-																	−
-																</span>
-															)}
-															{level === 1 && (
-																<span className="text-3xl text-red-600 font-bold">
-																	✕
-																</span>
-															)}
-														</>
-													)}
-												</button>
+												<td key={dayIndex} className="py-2 align-middle">
+													<button onClick={() => updateProgress(habit.id, dayIndex)} disabled={updatingProgress === `${habit.id}-${dayIndex}`} className={`mx-auto w-16 h-16 flex items-center justify-center rounded border-2 transition-all duration-200 hover:scale-110 active:scale-95 ${getCompletionColor(level)} hover:shadow-md`} title={`${day.full} - Level ${level}/3 (Click to cycle)`}>
+														{updatingProgress === `${habit.id}-${dayIndex}` ? (
+															<div className="animate-spin h-6 w-6 border-2 border-gray-600 border-t-transparent rounded-full"></div>
+														) : (
+															<>
+																{level === 3 && (
+																	<svg className="w-9 h-9 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+																		<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+																	</svg>
+																)}
+																{level === 2 && (<span className="text-3xl text-gray-700 font-bold">−</span>)}
+																{level === 1 && (<span className="text-3xl text-gray-600 font-bold">✕</span>)}
+															</>
+														)}
+													</button>
+												</td>
 											);
 										})}
-										<div className="flex items-center gap-1">
-											<button
-												onClick={() => startEdit(habit)}
-												disabled={editingHabit !== null}
-												className="w-10 h-10 flex items-center justify-center text-blue-600 hover:text-blue-700 hover:bg-blue-100 rounded-lg transition-all disabled:opacity-30 disabled:cursor-not-allowed"
-												title="Edit habit"
-											>
-												<svg
-													className="w-5 h-5"
-													fill="none"
-													stroke="currentColor"
-													viewBox="0 0 24 24"
-												>
-													<path
-														strokeLinecap="round"
-														strokeLinejoin="round"
-														strokeWidth={2}
-														d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
-													/>
-												</svg>
-											</button>
-											<button
-												onClick={() => deleteHabit(habit.id)}
-												className="w-10 h-10 flex items-center justify-center text-red-600 hover:text-red-700 hover:bg-red-100 rounded-lg transition-all"
-												title="Delete habit"
-											>
-												<svg
-													className="w-5 h-5"
-													fill="none"
-													stroke="currentColor"
-													viewBox="0 0 24 24"
-												>
-													<path
-														strokeLinecap="round"
-														strokeLinejoin="round"
-														strokeWidth={2}
-														d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-													/>
-												</svg>
-											</button>
-										</div>
-									</div>
+										<td className="w-28 py-2 align-middle">
+											<div className="flex items-center justify-center gap-1">
+												<button onClick={() => startEdit(habit)} disabled={editingHabit !== null} className="w-10 h-10 flex items-center justify-center text-black hover:bg-gray-100 rounded transition-all disabled:opacity-30 disabled:cursor-not-allowed border border-gray-300 hover:border-black" title="Edit habit">
+													<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+														<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+													</svg>
+												</button>
+												<button onClick={() => deleteHabit(habit.id)} className="w-10 h-10 flex items-center justify-center text-black hover:bg-gray-100 rounded transition-all border border-gray-300 hover:border-black" title="Delete habit">
+													<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+														<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+													</svg>
+												</button>
+											</div>
+										</td>
+									</tr>
 								))}
-							</div>
-						</div>
+							</tbody>
+						</table>
 					</div>
+					</div>
+				)}
 				</div>
-			)}
+				<div className="lg:col-span-1">
+					<HabitForm onHabitAdded={fetchHabits} />
+				</div>
+			</div>
 		</div>
 	);
 }

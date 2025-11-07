@@ -22,6 +22,8 @@ import HabitsForm from "./components/HabitsForm";
 import ThoughtsData from "./components/ThoughtsData";
 import MoodsData from "./components/MoodsData";
 import HabitsData from "./components/HabitsData";
+import ThoughtsLogs from "./components/ThoughtsLogs";
+import HabitsLogs from "./components/HabitsLogs";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 
@@ -52,9 +54,9 @@ export default function App() {
 						</ProtectedRoute>
 					}>
 						<Route index element={<Navigate to="/logs/thoughts" replace />} />
-						<Route path="thoughts" element={<ThoughtsForm />} />
+						<Route path="thoughts" element={<ThoughtsLogs />} />
 						<Route path="moods" element={<MoodsForm />} />
-						<Route path="habits" element={<HabitsForm />} />
+						<Route path="habits" element={<HabitsLogs />} />
 					</Route>
 					<Route path="/home" element={
 						<ProtectedRoute >

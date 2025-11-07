@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 
-export default function ThoughtsForm() {
+export default function ThoughtsForm({ canAddToday = true, onAdded } ) {
 	const [submitting, setSubmitting] = useState(false);
 	const [formData, setFormData] = useState({
 		text: "",
@@ -33,9 +33,12 @@ export default function ThoughtsForm() {
 			}
 
 			if (res.ok) {
+				const newThought = data?.newThought || data?.thought || null;
 				toast.success("Thought added successfully!");
 				// reset form to defaults
 				setFormData({ text: "" });
+				// notify parent to refresh graph/state
+				if (onAdded && newThought) onAdded(newThought);
 			} else {
 				toast.error(data.message || "Add thought failed");
 			}
@@ -64,24 +67,24 @@ export default function ThoughtsForm() {
 	};
 
 	return (
-		<div>
+		<div className="max-w-7xl mx-auto mt-6">
 			<form className="mt-4" onSubmit={handleSubmit}>
 				<input
 					type="text"
 					name="text"
 					value={formData.text}
 					onChange={handleChange}
-					placeholder="Enter your thought (max 5 words)"
-					className="w-full px-3 py-2 border rounded mb-4"
-					disabled={submitting}
+					placeholder={canAddToday ? "Enter your thought (max 5 words)" : "You've already added a thought today"}
+					className="w-full px-3 py-2 border border-black rounded mb-4"
+					disabled={submitting || !canAddToday}
 				/>
 
 				<button
 					type="submit"
-					className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-					disabled={submitting}
+					className={`px-4 py-2 border border-black rounded ${submitting || !canAddToday ? 'bg-gray-200 text-gray-500' : 'bg-black text-white hover:opacity-90'}`}
+					disabled={submitting || !canAddToday}
 				>
-					{submitting ? "Adding..." : "Add Thought"}
+					{submitting ? "Adding..." : (canAddToday ? "Add Thought" : "Already added today")}
 				</button>
 			</form>
 		</div>
