@@ -85,10 +85,9 @@ export default function MoodsData() {
 				color: '#f472b6',
 				data: moods.map((mood, idx) => {
 					const date = new Date(mood.createdAt);
-					const timeStr = date.toLocaleTimeString('en-US', {
-						hour: '2-digit',
-						minute: '2-digit',
-						hour12: false
+					const timeStr = date.toLocaleDateString('en-US', {
+						month: 'short',
+						day: 'numeric',
 					});
 					// Convert from -1 to 1 range to 0 to 100 percentage
 					return {
@@ -102,10 +101,9 @@ export default function MoodsData() {
 				color: '#8b5cf6',
 				data: moods.map((mood, idx) => {
 					const date = new Date(mood.createdAt);
-					const timeStr = date.toLocaleTimeString('en-US', {
-						hour: '2-digit',
-						minute: '2-digit',
-						hour12: false
+					const timeStr = date.toLocaleDateString('en-US', {
+						month: 'short',
+						day: 'numeric',
 					});
 					// Convert from -1 to 1 range to 0 to 100 percentage
 					return {
