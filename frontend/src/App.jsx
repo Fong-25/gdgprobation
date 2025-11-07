@@ -13,10 +13,10 @@ import Home from "./pages/Home";
 import Logs from "./pages/Logs";
 import { Toaster } from "react-hot-toast";
 
-// Importing form components
-import ThoughtsForm from "./components/ThoughtsForm";
-import MoodsForm from "./components/MoodsForm";
-import HabitsForm from "./components/HabitsForm";
+// // Importing form components
+// import ThoughtsForm from "./components/ThoughtsForm";
+// import MoodsForm from "./components/MoodsForm";
+// import HabitsForm from "./components/HabitsForm";
 
 // Importing data components
 import ThoughtsData from "./components/ThoughtsData";
@@ -24,6 +24,7 @@ import MoodsData from "./components/MoodsData";
 import HabitsData from "./components/HabitsData";
 import ThoughtsLogs from "./components/ThoughtsLogs";
 import HabitsLogs from "./components/HabitsLogs";
+import MoodsLogs from "./components/MoodsLogs";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 
@@ -55,7 +56,7 @@ export default function App() {
 					}>
 						<Route index element={<Navigate to="/logs/thoughts" replace />} />
 						<Route path="thoughts" element={<ThoughtsLogs />} />
-						<Route path="moods" element={<MoodsForm />} />
+						<Route path="moods" element={<MoodsLogs />} />
 						<Route path="habits" element={<HabitsLogs />} />
 					</Route>
 					<Route path="/home" element={
