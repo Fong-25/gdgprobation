@@ -6,7 +6,6 @@ export default function HabitForm({ onHabitAdded }) {
 	const [formData, setFormData] = useState({
 		name: "",
 		frequency: "per_day",
-		isTracked: true,
 	});
 
 	const handleFormChange = (e) => {
@@ -36,7 +35,7 @@ export default function HabitForm({ onHabitAdded }) {
 
 			if (res.ok) {
 				toast.success("Habit added successfully!");
-				setFormData({ name: "", frequency: "per_day", isTracked: true });
+				setFormData({ name: "", frequency: "per_day" });
 				onHabitAdded?.();
 			} else {
 				toast.error(data.message || "Add habit failed");
@@ -50,17 +49,17 @@ export default function HabitForm({ onHabitAdded }) {
 	};
 
 	return (
-		<div className="bg-white rounded-xl shadow-md overflow-hidden border border-black mt-6 lg:mt-0">
-			<div className="bg-gray-50 px-6 py-4 border-b border-black">
-				<h3 className="text-xl font-bold text-black">Add New Habit</h3>
+		<div className="bg-white rounded-lg border border-black mt-4 sm:mt-6 lg:mt-0">
+			<div className="bg-gray-50 px-4 sm:px-6 py-3 sm:py-4 border-b border-black">
+				<h3 className="text-lg sm:text-xl font-bold text-black">Add New Habit</h3>
 			</div>
-			<div className="p-6">
+			<div className="p-4 sm:p-6">
 				<form onSubmit={handleFormSubmit}>
-					<div className="mb-4">
-						<label className="block text-gray-700 font-medium mb-2">Habit Name:</label>
+					<div className="mb-3 sm:mb-4">
+						<label className="block text-gray-700 text-sm sm:text-base font-medium mb-1.5 sm:mb-2">Habit Name:</label>
 						<input
 							type="text"
-							className="w-full px-3 py-2 border border-black rounded"
+							className="w-full px-3 py-2 text-sm sm:text-base border border-black rounded"
 							placeholder="Enter habit name"
 							name="name"
 							value={formData.name}
@@ -70,10 +69,10 @@ export default function HabitForm({ onHabitAdded }) {
 						/>
 					</div>
 
-					<div className="mb-4">
-						<label className="block text-gray-700 font-medium mb-2">Frequency:</label>
+					<div className="mb-3 sm:mb-4">
+						<label className="block text-gray-700 text-sm sm:text-base font-medium mb-1.5 sm:mb-2">Frequency:</label>
 						<select
-							className="w-full px-3 py-2 border border-black rounded"
+							className="w-full px-3 py-2 text-sm sm:text-base border border-black rounded"
 							name="frequency"
 							value={formData.frequency}
 							onChange={handleFormChange}
@@ -85,22 +84,9 @@ export default function HabitForm({ onHabitAdded }) {
 						</select>
 					</div>
 
-					<div className="mb-4 flex items-center">
-						<input
-							id="isTracked"
-							name="isTracked"
-							type="checkbox"
-							checked={formData.isTracked}
-							onChange={handleFormChange}
-							disabled={submitting}
-							className="mr-2 w-4 h-4"
-						/>
-						<label htmlFor="isTracked" className="text-gray-700">Track this habit</label>
-					</div>
-
 					<button
 						type="submit"
-						className={`px-4 py-2 border border-black rounded ${submitting ? 'bg-gray-200 text-gray-500' : 'bg-black text-white hover:opacity-90'}`}
+						className={`w-full sm:w-auto px-4 py-2 text-sm sm:text-base border border-black rounded ${submitting ? 'bg-gray-200 text-gray-500' : 'bg-black text-white hover:opacity-90'}`}
 						disabled={submitting}
 					>
 						{submitting ? "Adding..." : "Add Habit"}

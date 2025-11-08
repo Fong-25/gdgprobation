@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Calendar, Heart } from 'lucide-react';
+import { Calendar, Heart, Trash2 } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 const MoodsLogs = () => {
     const [moods, setMoods] = useState([]);
@@ -81,62 +82,92 @@ const MoodsLogs = () => {
         return { happyPercent, calmPercent };
     };
 
+    const handleDelete = async (moodId) => {
+        if (!confirm('Are you sure you want to delete this mood entry?')) return;
+
+        try {
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/api/moods/${moodId}`, {
+                method: 'DELETE',
+                credentials: 'include'
+            });
+
+            if (res.ok) {
+                setMoods(moods.filter(m => m.id !== moodId));
+                toast.success('Mood deleted successfully');
+            } else {
+                toast.error('Failed to delete mood');
+            }
+        } catch (error) {
+            console.error('Delete error:', error);
+            toast.error('Something went wrong');
+        }
+    };
+
     return (
-        <div className="min-h-screen bg-white p-8">
-            <div className="max-w-4xl mx-auto">
-                <div className="bg-white rounded-lg shadow p-8 border border-black">
-                    <div className="flex items-center gap-3 mb-6">
-                        <Heart className="w-8 h-8 text-black" />
-                        <h1 className="text-3xl font-bold text-black">All Moods</h1>
+        <div className="min-h-screen bg-white p-4 sm:p-6 lg:p-8">
+            <div className="max-w-7xl mx-auto">
+                <div className="bg-white rounded-lg border border-black p-4 sm:p-6">
+                    <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
+                        <Heart className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-black flex-shrink-0" />
+                        <h1 className="text-2xl sm:text-3xl font-bold text-black">All Moods</h1>
                     </div>
 
                     {error && (
-                        <div className="mb-4 p-3 border border-black bg-gray-100 rounded">
-                            <p className="text-sm text-gray-700">{error}</p>
+                        <div className="mb-4 p-2 sm:p-3 border border-black bg-gray-50 rounded">
+                            <p className="text-xs sm:text-sm text-gray-700">{error}</p>
                         </div>
                     )}
 
                     {loading ? (
-                        <div className="text-center py-12">
-                            <p className="text-gray-700">Loading moods...</p>
+                        <div className="text-center py-8 sm:py-12">
+                            <p className="text-sm sm:text-base text-gray-700">Loading moods...</p>
                         </div>
                     ) : moods.length === 0 ? (
-                        <div className="text-center py-12">
-                            <p className="text-gray-700">No moods logged yet. Start by logging your first mood!</p>
+                        <div className="text-center py-8 sm:py-12">
+                            <p className="text-sm sm:text-base text-gray-700">No moods logged yet. Start by logging your first mood!</p>
                         </div>
                     ) : (
-                        <div className="space-y-3">
+                        <div className="space-y-2 sm:space-y-3">
                             {moods.map((mood) => {
                                 const stats = getMoodStats(mood.moodX, mood.moodY);
                                 return (
                                     <div
                                         key={mood.id}
-                                        className="p-4 border border-black rounded bg-gray-50 hover:bg-gray-100 transition-colors"
+                                        className="p-3 sm:p-4 border border-black rounded bg-gray-50 hover:bg-gray-100 transition-colors"
                                     >
-                                        <div className="flex items-start justify-between gap-4">
-                                            <div className="flex-1">
-                                                <div className="flex items-center gap-3 mb-2">
-                                                    <p className="text-lg font-medium text-black">
+                                        <div className="flex items-start justify-between gap-3 sm:gap-4">
+                                            <div className="flex-1 min-w-0">
+                                                <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-2">
+                                                    <p className="text-base sm:text-lg font-bold text-black">
                                                         {getMoodLabel(mood.moodX, mood.moodY)}
                                                     </p>
-                                                    <span className="px-2 py-1 bg-pink-500 text-white text-xs font-semibold rounded">
+                                                    <span className="px-2 py-1 bg-black text-white text-xs font-semibold rounded whitespace-nowrap">
                                                         H: {stats.happyPercent}%
                                                     </span>
-                                                    <span className="px-2 py-1 bg-purple-500 text-white text-xs font-semibold rounded">
+                                                    <span className="px-2 py-1 bg-gray-700 text-white text-xs font-semibold rounded whitespace-nowrap">
                                                         C: {stats.calmPercent}%
                                                     </span>
                                                 </div>
-                                                <div className="flex items-center gap-2 text-sm text-gray-700">
-                                                    <Calendar className="w-4 h-4" />
-                                                    <span>{formatDate(mood.createdAt)}</span>
+                                                <div className="flex flex-wrap items-center gap-2 text-xs sm:text-sm text-gray-700">
+                                                    <Calendar className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
+                                                    <span className="whitespace-nowrap">{formatDate(mood.createdAt)}</span>
                                                     <span className="text-gray-500">•</span>
-                                                    <span className="text-gray-600">
+                                                    <span className="text-gray-600 whitespace-nowrap">
                                                         {formatRelativeDate(mood.createdAt)}
                                                     </span>
                                                 </div>
-                                                <div className="mt-2 text-xs text-gray-600">
+                                                <div className="mt-2 text-[10px] sm:text-xs text-gray-600">
                                                     <span>Coordinates: ({mood.moodX.toFixed(2)}, {mood.moodY.toFixed(2)})</span>
                                                 </div>
+                                            </div>
+                                            <div className="flex items-center">
+                                                <button
+                                                    onClick={() => handleDelete(mood.id)}
+                                                    className="p-2 text-black hover:bg-gray-200 rounded transition-colors border border-gray-300 hover:border-black"
+                                                    title="Delete mood"
+                                                >
+                                                    <Trash2 className="w-4 h-4" />
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
@@ -145,19 +176,19 @@ const MoodsLogs = () => {
                         </div>
                     )}
 
-                    <div className="mt-6 pt-6 border-t border-black">
-                        <p className="text-sm text-gray-700 text-center">
+                    <div className="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-black">
+                        <p className="text-xs sm:text-sm text-gray-700 text-center">
                             Total moods logged: <span className="font-bold text-black">{moods.length}</span>
                         </p>
                         {moods.length > 0 && (
-                            <div className="mt-2 flex justify-center gap-6 text-sm text-gray-700">
+                            <div className="mt-2 flex flex-col sm:flex-row justify-center items-center gap-2 sm:gap-6 text-xs sm:text-sm text-gray-700">
                                 <span>
-                                    Avg Happiness: <span className="font-bold text-pink-600">
+                                    Avg Happiness: <span className="font-bold text-black">
                                         {(moods.reduce((sum, m) => sum + ((m.moodX + 1) / 2), 0) / moods.length * 100).toFixed(0)}%
                                     </span>
                                 </span>
                                 <span>
-                                    Avg Calmness: <span className="font-bold text-purple-600">
+                                    Avg Calmness: <span className="font-bold text-black">
                                         {(moods.reduce((sum, m) => sum + ((m.moodY + 1) / 2), 0) / moods.length * 100).toFixed(0)}%
                                     </span>
                                 </span>

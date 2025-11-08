@@ -1,7 +1,8 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { Network, FileText, GitBranch } from 'lucide-react';
-import ThoughtsForm from './ThoughtsForm';
+import WeekBar from './WeekBar';
 import { data as fallbackData } from '../data';
+import toast from 'react-hot-toast';
 
 const ThoughtsData = () => {
   // text is derived from database thoughts for a selected week
@@ -19,6 +20,8 @@ const ThoughtsData = () => {
   const [camera, setCamera] = useState({ x: 0, y: 0, zoom: 1 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const [editingId, setEditingId] = useState(null);
+  const [editText, setEditText] = useState('');
 
   // clamp camera panning so user can't move the graph infinitely far
   const clampCamera = (cam, width, height) => {
@@ -109,6 +112,36 @@ const ThoughtsData = () => {
     const merged = weekThoughts.map(t => t.text).join('. ');
     setText(merged || '');
   }, [thoughts, weekOffset]);
+
+  // Handle canvas resize
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const updateCanvasSize = () => {
+      const container = canvas.parentElement;
+      if (!container) return;
+      const rect = container.getBoundingClientRect();
+      const containerWidth = rect.width - 32; // Account for padding
+      const maxWidth = Math.min(containerWidth, 800);
+      const aspectRatio = 4 / 3;
+      canvas.width = maxWidth;
+      canvas.height = maxWidth / aspectRatio;
+      // Trigger a re-render of the graph when canvas size changes
+      setNodes(prev => [...prev]);
+    };
+
+    // Use ResizeObserver for better performance
+    const resizeObserver = new ResizeObserver(updateCanvasSize);
+    resizeObserver.observe(canvas.parentElement);
+    
+    // Initial size
+    updateCanvasSize();
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -367,112 +400,137 @@ const ThoughtsData = () => {
       .slice(0, 8);
   }, [analysis]);
 
-  // whether user already added a thought today (based on fetched thoughts)
-  const hasThoughtToday = useMemo(() => {
-    const today = new Date();
-    return thoughts.some(t => {
-      const d = new Date(t.created_at || t.createdAt || t.createdAt);
-      return d.getFullYear() === today.getFullYear() && d.getMonth() === today.getMonth() && d.getDate() === today.getDate();
-    });
-  }, [thoughts]);
+  const handleDelete = async (thoughtId) => {
+    if (!confirm('Are you sure you want to delete this thought?')) return;
 
-  // allow adding only when viewing current week and user hasn't already added today
-  const canAddToday = weekOffset === 0 && !hasThoughtToday;
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/thoughts/${thoughtId}`, {
+        method: 'DELETE',
+        credentials: 'include'
+      });
 
-  const handleAddedThought = (newThought) => {
-    if (!newThought) return;
-    // prepend the new thought so most recent appear first
-    setThoughts(prev => [newThought, ...prev]);
-    // ensure viewing current week so the new thought is visible
-    setWeekOffset(0);
+      if (res.ok) {
+        setThoughts(thoughts.filter(t => t.id !== thoughtId));
+        toast.success('Thought deleted successfully');
+      } else {
+        toast.error('Failed to delete thought');
+      }
+    } catch (error) {
+      console.error('Delete error:', error);
+      toast.error('Something went wrong');
+    }
+  };
+
+  const startEdit = (thought) => {
+    setEditingId(thought.id);
+    setEditText(thought.text);
+  };
+
+  const cancelEdit = () => {
+    setEditingId(null);
+    setEditText('');
+  };
+
+  const saveEdit = async (thoughtId) => {
+    if (!editText.trim()) {
+      toast.error('Thought cannot be empty');
+      return;
+    }
+
+    const wordCount = editText.trim().split(/\s+/).length;
+    if (wordCount > 5) {
+      toast.error('Thought must be 5 words or less');
+      return;
+    }
+
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/thoughts/${thoughtId}`, {
+        method: 'PUT',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: editText })
+      });
+
+      if (res.ok) {
+        setThoughts(thoughts.map(t => 
+          t.id === thoughtId ? { ...t, text: editText } : t
+        ));
+        toast.success('Thought updated successfully');
+        cancelEdit();
+      } else {
+        toast.error('Failed to update thought');
+      }
+    } catch (error) {
+      console.error('Update error:', error);
+      toast.error('Something went wrong');
+    }
   };
 
   return (
-    <div className="min-h-screen bg-white p-8">
+    <div className="min-h-screen bg-white p-4 sm:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
-        <div className="bg-white rounded-lg shadow p-8 mb-6 border border-black">
-          <div className="flex items-center justify-between gap-3 mb-6">
-            <div className="flex items-center gap-3">
-              <Network className="w-8 h-8 text-black" />
-              <h1 className="text-3xl font-bold text-black">Word Network Graph</h1>
+        <div className="bg-white rounded-lg shadow p-4 sm:p-6 lg:p-8 mb-4 sm:mb-6 border border-black">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 mb-4 sm:mb-6">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <Network className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-black flex-shrink-0" />
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-black">Thoughts Network Graph</h1>
             </div>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setWeekOffset(w => w - 1)}
-                className="px-3 py-1 border border-black bg-white text-black rounded"
-                aria-label="Previous week"
-              >
-                ← Week
-              </button>
-              <div className="text-sm text-black px-3">
-                {(() => {
-                  const { start, end } = getWeekRange(weekOffset);
-                  return `${start.toLocaleDateString()} – ${end.toLocaleDateString()}`;
-                })()}
-              </div>
-              <button
-                onClick={() => setWeekOffset(w => Math.min(0, w + 1))}
-                className="px-3 py-1 border border-black bg-white text-black rounded"
-                aria-label="Next week"
-              >
-                Week →
-              </button>
+            
+            {/* Week Navigation */}
+            <div className="w-full sm:w-auto">
+              <WeekBar currentWeekOffset={weekOffset} setCurrentWeekOffset={setWeekOffset} />
             </div>
           </div>
 
-          <div className="mb-6">
-            <p className="text-sm text-gray-700">Graph is generated from the thoughts stored in the database for the selected week.</p>
-            {loadingThoughts && <p className="text-sm text-gray-500 mt-2">Loading thoughts…</p>}
+          <div className="mb-4 sm:mb-6">
+            <p className="text-xs sm:text-sm text-gray-700">Graph is generated from the thoughts stored in the database for the selected week.</p>
+            {loadingThoughts && <p className="text-xs sm:text-sm text-gray-500 mt-2">Loading thoughts…</p>}
           </div>
 
-          <div className="grid grid-cols-3 gap-4 mb-6">
-            <div className="p-4 rounded-lg border border-black bg-gray-50">
-              <div className="text-2xl font-bold text-black">{analysis.totalWords}</div>
-              <div className="text-sm text-gray-700">Total Words</div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-4 sm:mb-6">
+            <div className="p-3 sm:p-4 rounded-lg border border-black bg-gray-50">
+              <div className="text-xl sm:text-2xl font-bold text-black">{analysis.totalWords}</div>
+              <div className="text-xs sm:text-sm text-gray-700">Total Words</div>
             </div>
-            <div className="p-4 rounded-lg border border-black bg-gray-50">
-              <div className="text-2xl font-bold text-black">{analysis.uniqueWords}</div>
-              <div className="text-sm text-gray-700">Unique Words</div>
-            </div>
-            <div className="p-4 rounded-lg border border-black bg-gray-50">
-              <div className="text-2xl font-bold text-black">{nodes.length}</div>
-              <div className="text-sm text-gray-700">Nodes in Graph</div>
+            <div className="p-3 sm:p-4 rounded-lg border border-black bg-gray-50">
+              <div className="text-xl sm:text-2xl font-bold text-black">{analysis.uniqueWords}</div>
+              <div className="text-xs sm:text-sm text-gray-700">Unique Words</div>
             </div>
           </div>
-          <ThoughtsForm canAddToday={canAddToday} onAdded={handleAddedThought} />
         </div>
 
-        <div className="grid grid-cols-3 gap-6">
-          <div className="col-span-2 bg-white rounded-lg shadow p-6 border border-black">
-            <h2 className="text-xl font-bold text-black mb-4">Interactive Network Graph</h2>
-            <canvas
-              ref={canvasRef}
-              width={800}
-              height={600}
-              className="w-full rounded border-2 border-black cursor-move"
-            />
-            <p className="text-sm text-gray-700 mt-2 text-center">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+          <div className="lg:col-span-2 bg-white rounded-lg shadow p-4 sm:p-6 border border-black order-2 lg:order-1">
+            <h2 className="text-lg sm:text-xl font-bold text-black mb-3 sm:mb-4">Interactive Network Graph</h2>
+            <div className="w-full">
+              <canvas
+                ref={canvasRef}
+                className="w-full max-w-full h-auto rounded border-2 border-black cursor-move"
+                style={{ aspectRatio: '4/3', maxHeight: '600px' }}
+              />
+            </div>
+            <p className="text-xs sm:text-sm text-gray-700 mt-2 text-center">
               Scroll to zoom • Click and drag to pan • Words are connected based on proximity
             </p>
           </div>
 
       {/* Top Connections Panel */}
-          <div className="bg-white rounded-lg shadow p-6 border border-black">
-            <div className="flex items-center gap-2 mb-4">
-              <GitBranch className="w-5 h-5 text-black" />
-              <h2 className="text-xl font-bold text-black">Top Connections</h2>
+          <div className="bg-white rounded-lg shadow p-4 sm:p-6 border border-black order-1 lg:order-2">
+            <div className="flex items-center gap-2 mb-3 sm:mb-4">
+              <GitBranch className="w-4 h-4 sm:w-5 sm:h-5 text-black flex-shrink-0" />
+              <h2 className="text-lg sm:text-xl font-bold text-black">Top Connections</h2>
             </div>
 
 
-            <div className="space-y-2 max-h-[550px] overflow-y-auto" >
+            <div className="space-y-2 max-h-[300px] sm:max-h-[400px] lg:max-h-[550px] overflow-y-auto" >
               {topPairs.map(([pair, count], idx) => {
                 const [word1, word2] = pair.split('|||');
                 return (
-                  <div key={idx} className="p-3 bg-white rounded-lg border border-black">
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm font-medium text-black">{word1}</span>
-                      <span className="text-xs text-gray-700">↔</span>
-                      <span className="text-sm font-medium text-black">{word2}</span>
+                  <div key={idx} className="p-2 sm:p-3 bg-white rounded-lg border border-black">
+                    <div className="flex items-center justify-between mb-1 gap-2">
+                      <span className="text-xs sm:text-sm font-medium text-black truncate">{word1}</span>
+                      <span className="text-xs text-gray-700 flex-shrink-0">↔</span>
+                      <span className="text-xs sm:text-sm font-medium text-black truncate">{word2}</span>
                     </div>
                     <div className="flex items-center justify-center">
                       <span className="px-2 py-1 bg-black text-white rounded-full text-xs font-semibold">
@@ -483,6 +541,106 @@ const ThoughtsData = () => {
                 );
               })}
             </div>
+          </div>
+        </div>
+
+        {/* All Thoughts Section */}
+        <div className="bg-white rounded-lg shadow p-4 sm:p-6 border border-black mt-4 sm:mt-6">
+          <div className="flex items-center gap-2 mb-3 sm:mb-4">
+            <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-black flex-shrink-0" />
+            <h2 className="text-lg sm:text-xl font-bold text-black">All Thoughts</h2>
+          </div>
+
+          <div className="max-h-96 overflow-y-auto space-y-2">
+            {thoughts.length === 0 ? (
+              <p className="text-gray-700 text-xs sm:text-sm text-center py-6 sm:py-8">No thoughts yet. Go to Logs page to add one!</p>
+            ) : (
+              thoughts.map((thought) => {
+                const date = new Date(thought.created_at || thought.createdAt);
+                const timestamp = date.toLocaleString('en-US', {
+                  month: '2-digit',
+                  day: '2-digit',
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  hour12: false
+                });
+
+                return (
+                  <div key={thought.id} className="p-3 border border-black rounded bg-gray-50 hover:bg-gray-100 transition-colors">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex-1 min-w-0">
+                        {editingId === thought.id ? (
+                          <div className="mb-2">
+                            <input
+                              type="text"
+                              value={editText}
+                              onChange={(e) => setEditText(e.target.value)}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                  e.preventDefault();
+                                  saveEdit(thought.id);
+                                }
+                              }}
+                              className="w-full px-3 py-2 border-2 border-black rounded text-sm focus:outline-none focus:ring-2 focus:ring-gray-500"
+                              autoFocus
+                            />
+                          </div>
+                        ) : (
+                          <p className="text-sm font-medium text-black mb-1">{thought.text}</p>
+                        )}
+                        <p className="text-xs text-gray-700">{timestamp}</p>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        {editingId === thought.id ? (
+                          <>
+                            <button
+                              onClick={() => saveEdit(thought.id)}
+                              className="p-2 text-black hover:bg-gray-200 rounded transition-colors border border-gray-300 hover:border-black"
+                              title="Save"
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                              </svg>
+                            </button>
+                            <button
+                              onClick={cancelEdit}
+                              className="p-2 text-black hover:bg-gray-200 rounded transition-colors border border-gray-300 hover:border-black"
+                              title="Cancel"
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                              </svg>
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            <button
+                              onClick={() => startEdit(thought)}
+                              disabled={editingId !== null}
+                              className="p-2 text-black hover:bg-gray-200 rounded transition-colors border border-gray-300 hover:border-black disabled:opacity-30 disabled:cursor-not-allowed"
+                              title="Edit thought"
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                              </svg>
+                            </button>
+                            <button
+                              onClick={() => handleDelete(thought.id)}
+                              className="p-2 text-black hover:bg-gray-200 rounded transition-colors border border-gray-300 hover:border-black"
+                              title="Delete thought"
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                              </svg>
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })
+            )}
           </div>
         </div>
       </div>

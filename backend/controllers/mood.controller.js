@@ -2,7 +2,8 @@ import {
     createMood,
     getMoodsByUserId,
     getMoodById,
-    validateMoodCoordinates
+    validateMoodCoordinates,
+    deleteMood
 } from '../services/mood.service.js'
 
 export const addMood = async (req, res) => {
@@ -67,6 +68,34 @@ export const getMood = async (req, res) => {
         })
     } catch (error) {
         console.error('Get mood error:', error)
+        return res.status(500).json({ message: 'Internal server error' })
+    }
+}
+
+export const removeMood = async (req, res) => {
+    try {
+        const { id } = req.params
+        const userId = req.userId // from auth middleware
+
+        // First check if mood exists and belongs to user
+        const mood = await getMoodById(parseInt(id))
+
+        if (!mood) {
+            return res.status(404).json({ message: 'Mood not found' })
+        }
+
+        if (mood.userId !== userId) {
+            return res.status(403).json({ message: 'Access denied' })
+        }
+
+        // Delete the mood
+        await deleteMood(parseInt(id))
+
+        return res.status(200).json({
+            message: 'Mood deleted successfully'
+        })
+    } catch (error) {
+        console.error('Delete mood error:', error)
         return res.status(500).json({ message: 'Internal server error' })
     }
 }

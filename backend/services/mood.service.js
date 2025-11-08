@@ -67,3 +67,10 @@ export const validateMoodCoordinates = (moodX, moodY) => {
 
     return { isValid: true }
 }
+
+export const deleteMood = async (id) => {
+    const mood = await prisma.mood.delete({
+        where: { id }
+    })
+    return mood
+}
