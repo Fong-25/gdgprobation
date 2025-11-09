@@ -1,183 +1,202 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import toast from 'react-hot-toast';
 
 export default function MoodGrid() {
-	const [moods, setMoods] = useState([]);
-	const [canLog, setCanLog] = useState(true);
-	const [timeRemaining, setTimeRemaining] = useState(0);
+  const [moods, setMoods] = useState([]);
+  const [canLog, setCanLog] = useState(true);
+  const [timeRemaining, setTimeRemaining] = useState(0);
 
-	const getMoodLabel = (moodX, moodY) => {
-		const happy = (moodX + 1) / 2;
-		const calm = (moodY + 1) / 2;
+  // Function to check if a new mood can be logged (cooldown logic)
+  const checkCooldown = useCallback(() => {
+    if (moods.length === 0) {
+      setCanLog(true);
+      setTimeRemaining(0);
+      return;
+    }
 
-		const happinessPercent = Math.round(happy * 100);
-		const calmnessPercent = Math.round(calm * 100);
+    const lastMood = moods[0];
+    const lastMoodTime = new Date(lastMood.createdAt).getTime();
+    const now = Date.now();
+    const timeDiff = now - lastMoodTime;
+    const waitInterval = 5 * 60 * 1000; // 5 minutes in ms
 
-		return `Happiness: ${happinessPercent}% | Calmness: ${calmnessPercent}%`;
-	};
+    if (timeDiff < waitInterval) {
+      setCanLog(false);
+      setTimeRemaining(Math.ceil((waitInterval - timeDiff) / 60000)); // minutes remaining
+    } else {
+      setCanLog(true);
+      setTimeRemaining(0);
+    }
+  }, [moods]);
 
-	const checkCooldown = () => {
-		if (moods.length === 0) {
-			setCanLog(true);
-			setTimeRemaining(0);
-			return;
-		}
+  // Function to handle logging a new mood on click
+  const handleMoodClick = async (e) => {
+    if (!canLog) {
+      toast.error(`Please wait ${timeRemaining} minute(s) before logging another mood`);
+      return;
+    }
 
-		const lastMood = moods[0];
-		const lastMoodTime = new Date(lastMood.createdAt).getTime();
-		const now = Date.now();
-		const timeDiff = now - lastMoodTime;
-		const thirtyMinutes = 30 * 60 * 1000; // 30 minutes in milliseconds
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width;
+    const y = (e.clientY - rect.top) / rect.height;
 
-		if (timeDiff < thirtyMinutes) {
-			setCanLog(false);
-			setTimeRemaining(Math.ceil((thirtyMinutes - timeDiff) / 60000)); // minutes remaining
-		} else {
-			setCanLog(true);
-			setTimeRemaining(0);
-		}
-	};
+    const moodX = (x * 2) - 1;
+    const moodY = 1 - (y * 2);
 
-	const handleMoodClick = async (e) => {
-		if (!canLog) {
-			toast.error(`Please wait ${timeRemaining} minute(s) before logging another mood`);
-			return;
-		}
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/moods`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ moodX, moodY }),
+      });
 
-		const rect = e.currentTarget.getBoundingClientRect();
-		const x = (e.clientX - rect.left) / rect.width;
-		const y = (e.clientY - rect.top) / rect.height;
+      const data = await res.json();
 
-		const moodX = (x * 2) - 1;
-		const moodY = 1 - (y * 2);
+      if (res.ok) {
+        toast.success('Mood logged successfully!');
+        setMoods([data.mood, ...moods]);
+      } else {
+        toast.error(data.message || 'Failed to log mood');
+      }
+    } catch (error) {
+      console.error("Add mood error:", error);
+      toast.error('Failed to log mood. Please try again.');
+    }
+  };
 
-		try {
-			const res = await fetch(`${import.meta.env.VITE_API_URL}/api/moods`, {
-				method: "POST",
-				credentials: "include",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({ moodX, moodY }),
-			});
+  // useEffect to fetch initial moods
+  useEffect(() => {
+    const fetchMoods = async () => {
+      try {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/moods`, {
+          method: "GET",
+          credentials: "include",
+        });
+        const data = await res.json();
+        if (res.ok) {
+          setMoods(data.moods.slice(0, 20)); // Show last 20 moods
+        }
+      } catch (error) {
+        console.error("Fetch moods error:", error);
+      }
+    };
 
-			const data = await res.json();
+    fetchMoods();
+  }, []); // Runs once on mount
 
-			if (res.ok) {
-				toast.success('Mood logged successfully!');
-				setMoods([data.mood, ...moods]);
-			} else {
-				toast.error(data.message || 'Failed to log mood');
-			}
-		} catch (error) {
-			console.error("Add mood error:", error);
-			toast.error('Failed to log mood. Please try again.');
-		}
-	};
+  // useEffect for cooldown check and interval
+  useEffect(() => {
+    checkCooldown();
 
-	useEffect(() => {
-		// Fetch recent moods to display on the grid
-		const fetchMoods = async () => {
-			try {
-				const res = await fetch(`${import.meta.env.VITE_API_URL}/api/moods`, {
-					method: "GET",
-					credentials: "include",
-				});
-				const data = await res.json();
-				if (res.ok) {
-					setMoods(data.moods.slice(0, 20)); // Show last 20 moods
-				}
-			} catch (error) {
-				console.error("Fetch moods error:", error);
-			}
-		};
+    const interval = setInterval(() => {
+      checkCooldown();
+    }, 60000); // Check every minute
 
-		fetchMoods();
-	}, []);
+    return () => clearInterval(interval);
+  }, [moods, checkCooldown]); // Reruns when moods change or checkCooldown memo changes
 
-	// Check cooldown whenever moods change
-	useEffect(() => {
-		checkCooldown();
-		
-		// Update cooldown timer every minute
-		const interval = setInterval(() => {
-			checkCooldown();
-		}, 60000); // Check every minute
+  return (
+    <MoodGridBody
+      canLog={canLog}
+      timeRemaining={timeRemaining}
+      moods={moods}
+      handleMoodClick={handleMoodClick}
+    />
+  );
+}
 
-		return () => clearInterval(interval);
-	}, [moods]);
+function MoodGridBody({ canLog, timeRemaining, moods, handleMoodClick }) {
+  return (
+    <div className="relative ml-4 sm:ml-6 lg:ml-8">
+      {!canLog && (
+        <div className="mb-3 p-2 bg-amber-800 border border-yellow-500 rounded text-center">
+          <p className="text-xs sm:text-sm text-yellow-300">
+            ⏳ Please wait {timeRemaining} minute(s) before logging another mood
+          </p>
+        </div>
+      )}
+      <div
+        className={`w-full aspect-square border-2 border-violet-400 rounded-lg relative max-w-md mx-auto ${canLog ? 'cursor-crosshair' : 'cursor-not-allowed opacity-60'}`}
+        onClick={handleMoodClick}
+      >
+        <PlottedMoods moods={moods} />
+        <AxisLabels />
+      </div>
+    </div>
+  );
+}
 
-	return (
-		<div className="relative ml-4 sm:ml-6 lg:ml-8">
-			{!canLog && (
-				<div className="mb-3 p-2 bg-yellow-50 border border-yellow-300 rounded text-center">
-					<p className="text-xs sm:text-sm text-yellow-800">
-						⏳ Please wait {timeRemaining} minute(s) before logging another mood
-					</p>
-				</div>
-			)}
-			<div
-				className={`w-full aspect-square border-2 border-black rounded-lg relative overflow-hidden bg-white max-w-md mx-auto ${canLog ? 'cursor-crosshair' : 'cursor-not-allowed opacity-60'}`}
-				onClick={handleMoodClick}
-			>
-				{/* Grid lines - centered axes */}
-				<svg className="absolute inset-0 w-full h-full pointer-events-none">
-					<line x1="50%" y1="0%" x2="50%" y2="100%" stroke="#000" strokeWidth="2" />
-					<line x1="0%" y1="50%" x2="100%" y2="50%" stroke="#000" strokeWidth="2" />
-					{Array.from({ length: 4 }).map((_, i) => {
-						const pos = (i + 1) * 25;
-						return (
-							<g key={i}>
-								<line x1={`${pos}%`} y1="0%" x2={`${pos}%`} y2="100%" stroke="#d1d5db" strokeWidth="1" />
-								<line x1="0%" y1={`${pos}%`} x2="100%" y2={`${pos}%`} stroke="#d1d5db" strokeWidth="1" />
-							</g>
-						);
-					})}
-				</svg>
+function PlottedMoods({ moods }) {
+  return (
+    <>
+      {moods.map((mood) => {
+        const xPos = 50 + (mood.moodX * 50);
+        const yPos = 50 - (mood.moodY * 50);
 
-				{/* Plotted moods */}
-				{moods.map((mood, idx) => {
-					const xPos = 50 + (mood.moodX * 50);
-					const yPos = 50 - (mood.moodY * 50);
-					const date = new Date(mood.createdAt);
-					const timestamp = date.toLocaleString('en-US', {
-						month: '2-digit',
-						day: '2-digit',
-						hour: '2-digit',
-						minute: '2-digit',
-						hour12: false
-					});
+        return (
+          <div
+            key={mood.id}
+            className="absolute w-2 h-2 border-2 border-violet-100 rounded-full transform -translate-x-1/2 -translate-y-1/2-lg"
+            style={{
+              left: `${xPos}%`,
+              top: `${yPos}%`
+            }}
+          />
+        );
+      })}
+    </>
+  );
+}
 
-					return (
-						<div
-							key={mood.id}
-							className="absolute w-4 h-4 bg-black border-2 border-white rounded-full transform -translate-x-1/2 -translate-y-1/2 shadow-lg"
-							style={{
-								left: `${xPos}%`,
-								top: `${yPos}%`
-							}}
-							title={`${timestamp}: ${getMoodLabel(mood.moodX, mood.moodY)}`}
-						/>
-					);
-				})}
+function AxisLabels() {
+  const labels = [
+    {
+      position: 'top-0 left-1/2 transform -translate-x-1/2',
+      text: 'Calm ↑',
+      textColor: 'text-pink-300',
+    },
+    {
+      position: 'bottom-0 left-1/2 transform -translate-x-1/2',
+      text: 'Angry ↓',
+      textColor: 'text-red-300',
+    },
+    {
+      position: 'left-0 top-1/2 transform -translate-y-1/2',
+      text: '← Sad',
+      textColor: 'text-cyan-300',
+    },
+    {
+      position: 'right-0 top-1/2 transform -translate-y-1/2',
+      text: 'Happy →',
+      textColor: 'text-yellow-300',
+    },
+  ];
 
-				{/* Axis labels */}
-				<div className="absolute top-0 left-1/2 transform -translate-x-1/2 text-[10px] sm:text-xs font-semibold text-black bg-white px-1.5 sm:px-2 py-0.5 sm:py-1 border border-black rounded">
-					Calm ↑
-				</div>
-				<div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 text-[10px] sm:text-xs font-semibold text-black bg-white px-1.5 sm:px-2 py-0.5 sm:py-1 border border-black rounded">
-					Angry ↓
-				</div>
-				<div className="absolute left-0 top-1/2 transform -translate-y-1/2 text-[10px] sm:text-xs font-semibold text-black bg-white px-1.5 sm:px-2 py-0.5 sm:py-1 border border-black rounded">
-					← Sad
-				</div>
-				<div className="absolute right-0 top-1/2 transform -translate-y-1/2 text-[10px] sm:text-xs font-semibold text-black bg-white px-1.5 sm:px-2 py-0.5 sm:py-1 border border-black rounded">
-					Happy →
-				</div>
-				<div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-[10px] sm:text-xs font-semibold text-black bg-white px-1.5 sm:px-2 py-0.5 sm:py-1 border border-black rounded">
-					0
-				</div>
-			</div>
-		</div>
-	);
+  return (
+    <div className="relative w-full h-full">
+      <svg className="absolute inset-0 w-full h-full pointer-events-none">
+          {Array.from({ length: 4 }).map((_, i) => {
+            const pos = (i + 1) * 25;
+            return (
+              <g key={i}>
+                <line x1={`${pos}%`} y1="0%" x2={`${pos}%`} y2="100%" stroke="#d1d5db" strokeWidth="1" />
+                <line x1="0%" y1={`${pos}%`} x2="100%" y2={`${pos}%`} stroke="#d1d5db" strokeWidth="1" />
+              </g>
+            );
+          })}
+        </svg>
+
+      {labels.map((label, index) => (
+        <div
+          key={index}
+          className={`absolute text-[10px] sm:text-xs font-semibold bg-indigo-900 px-1.5 sm:px-2 py-0.5 sm:py-1 border border-violet-400 rounded ${label.position} ${label.textColor}`}
+        >
+          {label.text}
+        </div>
+      ))}
+    </div>
+  );
 }
