@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { FileText } from "lucide-react";
 import WeekBar from "./WeekBar";
+import { Pencil, Trash2 } from 'lucide-react';
+import IconButton from "./IconButton";
 
 export default function HabitsData() {
 	const [habits, setHabits] = useState([]);
@@ -351,7 +353,8 @@ export default function HabitsData() {
 							<tbody>
 								{habits.map((habit, habitIndex) => (
 									<tr key={habit.id} className={`${habitIndex % 2 === 0 ? "bg-indigo-900" : "bg-indigo-800"} hover:bg-indigo-700 border-b border-violet-400`}>
-										<td className="pl-2 sm:pl-4 py-3 sm:py-4 align-middle overflow-visible sticky left-0 bg-inherit z-10">
+										<td className="pl-2 sm:pl-4 py-3 sm:py-4 align-middle overflow-visible sticky left-0 
+                disabled={editingId !== null}bg-inherit z-10">
 											{editingHabit === habit.id ? (
 												<input
 													type="text"
@@ -396,16 +399,19 @@ export default function HabitsData() {
 										})}
 										<td className="w-20 sm:w-24 lg:w-28 py-2 align-middle sticky right-0 bg-inherit z-10">
 											<div className="flex items-center justify-center gap-0.5 sm:gap-1">
-												<button onClick={() => startEdit(habit)} disabled={editingHabit !== null} className="w-8 h-8 sm:w-9 sm:h-9 lg:w-10 lg:h-10 flex items-center justify-center text-purple-100 hover:bg-indigo-700 rounded transition-all disabled:opacity-30 disabled:cursor-not-allowed border border-gray-300 hover:border-violet-400" title="Edit habit">
-													<svg className="w-4 h-4 sm:w-4.5 sm:h-4.5 lg:w-5 lg:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-														<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-													</svg>
-												</button>
-												<button onClick={() => deleteHabit(habit.id)} className="w-8 h-8 sm:w-9 sm:h-9 lg:w-10 lg:h-10 flex items-center justify-center text-purple-100 hover:bg-indigo-700 rounded transition-all border border-gray-300 hover:border-violet-400" title="Delete habit">
-													<svg className="w-4 h-4 sm:w-4.5 sm:h-4.5 lg:w-5 lg:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-														<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-													</svg>
-												</button>
+												<IconButton
+													onClick={() => startEdit(habit)}
+													disabled={editingHabit !== null}
+													icon={Pencil}
+													title="Edit habit"
+													hasBorder={true}
+												/>
+												<IconButton
+													onClick={() => deleteHabit(habit.id)}
+													icon={Trash2}
+													title="Delete habit"
+													hasBorder={true}
+												/>
 											</div>
 										</td>
 									</tr>

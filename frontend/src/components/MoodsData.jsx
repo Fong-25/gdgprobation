@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Heart, TrendingUp, Trash2 } from 'lucide-react';
 import { ResponsiveLine } from '@nivo/line';
 import WeekBar from './WeekBar';
+import IconButton from './IconButton';
 import toast from 'react-hot-toast';
 import CardNoIcon from './CardNoIcon';
 
@@ -187,13 +188,12 @@ function MoodEntryItem({ mood, handleDeleteMood }) {
           <p className="text-xs text-violet-300">{timestamp}</p>
         </div>
         <div className="flex items-center">
-          <button
+          <IconButton
             onClick={() => handleDeleteMood(mood.id)}
-            className="p-2 text-purple-100 hover:bg-violet-800 rounded transition-colors border border-gray-300 hover:border-violet-400"
+            icon={Trash2}
             title="Delete mood"
-          >
-            <Trash2 />
-          </button>
+            hasBorder={true}
+          />
         </div>
       </div>
     </div>

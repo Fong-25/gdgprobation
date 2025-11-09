@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { Network, FileText, GitBranch, Check, X, Pencil, Trash2  } from 'lucide-react';
 import WeekBar from './WeekBar';
 import CardNoIcon from './CardNoIcon';
+import IconButton from './IconButton';
 import { data as fallbackData } from '../data';
 import toast from 'react-hot-toast';
 
@@ -73,38 +74,34 @@ const ThoughtItem = ({ thought, editingId, editText, setEditText, startEdit, can
         <div className="flex items-center gap-1">
           {editingId === thought.id ? (
             <>
-              <button
+              <IconButton
                 onClick={() => saveEdit(thought.id)}
-                className="p-2 text-purple-100 hover:bg-violet-800 rounded transition-colors border border-gray-300 hover:border-violet-400"
+                icon={Check}
                 title="Save"
-              >
-                <Check />
-              </button>
-              <button
+                hasBorder={true}
+              />
+              <IconButton
                 onClick={cancelEdit}
-                className="p-2 text-purple-100 hover:bg-violet-800 rounded transition-colors border border-gray-300 hover:border-violet-400"
+                icon={X}
                 title="Cancel"
-              >
-                <X />
-              </button>
+                hasBorder={true}
+              />
             </>
           ) : (
             <>
-              <button
+              <IconButton
                 onClick={() => startEdit(thought)}
                 disabled={editingId !== null}
-                className="p-2 text-purple-100 hover:bg-violet-800 rounded transition-colors border border-gray-300 hover:border-violet-400 disabled:opacity-30 disabled:cursor-not-allowed"
+                icon={Pencil}
                 title="Edit thought"
-              >
-                <Pencil />
-              </button>
-              <button
+                hasBorder={true}
+              />
+              <IconButton
                 onClick={() => handleDelete(thought.id)}
-                className="p-2 text-purple-100 hover:bg-violet-800 rounded transition-colors border border-gray-300 hover:border-violet-400"
+                icon={Trash2}
                 title="Delete thought"
-              >
-                <Trash2 />
-              </button>
+                hasBorder={true}
+              />
             </>
           )}
         </div>
