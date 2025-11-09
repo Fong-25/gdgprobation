@@ -146,34 +146,34 @@ const ThoughtsLogs = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen bg-indigo-900 p-4 sm:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
-        <div className="bg-white rounded-lg border border-black p-4 sm:p-6 lg:p-8">
+        <div className="bg-indigo-900 rounded-lg border border-violet-400 p-4 sm:p-6 lg:p-8">
           <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
-            <MessageSquare className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-black flex-shrink-0" />
-            <h1 className="text-2xl sm:text-3xl font-bold text-black">All Thoughts</h1>
+            <MessageSquare className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-purple-100 shrink-0" />
+            <h1 className="text-2xl sm:text-3xl font-bold text-purple-100">All Thoughts</h1>
           </div>
 
           {error && (
-            <div className="mb-4 p-2 sm:p-3 border border-black bg-gray-50 rounded">
-              <p className="text-xs sm:text-sm text-gray-700">{error}</p>
+            <div className="mb-4 p-2 sm:p-3 border border-violet-400 bg-indigo-800 rounded">
+              <p className="text-xs sm:text-sm text-violet-300">{error}</p>
             </div>
           )}
 
           {loading ? (
             <div className="text-center py-8 sm:py-12">
-              <p className="text-sm sm:text-base text-gray-700">Loading thoughts...</p>
+              <p className="text-sm sm:text-base text-violet-300">Loading thoughts...</p>
             </div>
           ) : thoughts.length === 0 ? (
             <div className="text-center py-8 sm:py-12">
-              <p className="text-sm sm:text-base text-gray-700">No thoughts yet. Start by adding one!</p>
+              <p className="text-sm sm:text-base text-violet-300">No thoughts yet. Start by adding one!</p>
             </div>
           ) : (
             <div className="space-y-2 sm:space-y-3">
               {thoughts.map((thought) => (
                 <div
                   key={thought.id}
-                  className="p-3 sm:p-4 border border-black rounded bg-gray-50 hover:bg-gray-100 transition-colors"
+                  className="p-3 sm:p-4 border border-violet-400 rounded bg-indigo-800 hover:bg-indigo-700 transition-colors"
                 >
                   <div className="flex items-start justify-between gap-3 sm:gap-4">
                     <div className="flex-1 min-w-0">
@@ -183,7 +183,7 @@ const ThoughtsLogs = () => {
                             type="text"
                             value={editText}
                             onChange={(e) => setEditText(e.target.value)}
-                            className="w-full px-3 py-2 border-2 border-black rounded text-sm focus:outline-none focus:ring-2 focus:ring-gray-500"
+                            className="w-full px-3 py-2 border-2 border-violet-400 rounded text-sm focus:outline-none focus:ring-2 focus:ring-gray-500"
                             autoFocus
                           />
                           <p className="text-xs text-gray-600 mt-1">
@@ -191,12 +191,12 @@ const ThoughtsLogs = () => {
                           </p>
                         </div>
                       ) : (
-                        <p className="text-base sm:text-lg font-medium text-black mb-2 break-words">
+                        <p className="text-base sm:text-lg font-medium text-purple-100 mb-2 wrap-break-words">
                           {thought.text}
                         </p>
                       )}
-                      <div className="flex flex-wrap items-center gap-2 text-xs sm:text-sm text-gray-700">
-                        <Calendar className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" />
+                      <div className="flex flex-wrap items-center gap-2 text-xs sm:text-sm text-violet-300">
+                        <Calendar className="w-3 h-3 sm:w-4 sm:h-4 shrink-0" />
                         <span className="whitespace-nowrap">{formatDate(thought.created_at || thought.createdAt)}</span>
                         <span className="text-gray-500">•</span>
                         <span className="text-gray-600 whitespace-nowrap">
@@ -209,14 +209,14 @@ const ThoughtsLogs = () => {
                         <>
                           <button
                             onClick={() => saveEdit(thought.id)}
-                            className="p-2 text-black hover:bg-gray-200 rounded transition-colors border border-gray-300 hover:border-black"
+                            className="p-2 text-purple-100 hover:bg-violet-800 rounded transition-colors border border-gray-300 hover:border-violet-400"
                             title="Save"
                           >
                             <Check className="w-4 h-4" />
                           </button>
                           <button
                             onClick={cancelEdit}
-                            className="p-2 text-black hover:bg-gray-200 rounded transition-colors border border-gray-300 hover:border-black"
+                            className="p-2 text-purple-100 hover:bg-violet-800 rounded transition-colors border border-gray-300 hover:border-violet-400"
                             title="Cancel"
                           >
                             <X className="w-4 h-4" />
@@ -226,14 +226,14 @@ const ThoughtsLogs = () => {
                         <>
                           <button
                             onClick={() => startEdit(thought)}
-                            className="p-2 text-black hover:bg-gray-200 rounded transition-colors border border-gray-300 hover:border-black"
+                            className="p-2 text-purple-100 hover:bg-violet-800 rounded transition-colors border border-gray-300 hover:border-violet-400"
                             title="Edit thought"
                           >
                             <Edit2 className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => handleDelete(thought.id)}
-                            className="p-2 text-black hover:bg-gray-200 rounded transition-colors border border-gray-300 hover:border-black"
+                            className="p-2 text-purple-100 hover:bg-violet-800 rounded transition-colors border border-gray-300 hover:border-violet-400"
                             title="Delete thought"
                           >
                             <Trash2 className="w-4 h-4" />
@@ -247,9 +247,9 @@ const ThoughtsLogs = () => {
             </div>
           )}
 
-          <div className="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-black">
-            <p className="text-xs sm:text-sm text-gray-700 text-center">
-              Total thoughts: <span className="font-bold text-black">{thoughts.length}</span>
+          <div className="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-violet-400">
+            <p className="text-xs sm:text-sm text-violet-300 text-center">
+              Total thoughts: <span className="font-bold text-purple-100">{thoughts.length}</span>
             </p>
           </div>
         </div>
