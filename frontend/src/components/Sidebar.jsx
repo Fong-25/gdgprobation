@@ -25,7 +25,7 @@ export default function Sidebar({ mode = "forms" }) {
 			{/* Mobile Overlay */}
 			{isMobileOpen && (
 				<div
-					className="lg:hidden fixed inset-0 bg-black/50 z-40"
+					className="lg:hidden fixed inset-0 bg-indigo-950/50 z-40"
 					onClick={() => setIsMobileOpen(false)}
 				/>
 			)}
@@ -36,20 +36,20 @@ export default function Sidebar({ mode = "forms" }) {
 					isMobileOpen
 						? "fixed left-0 top-16 z-50 h-screen w-64"
 						: "hidden lg:block sticky top-16 self-start h-[calc(100vh-4rem)]"
-				} bg-gray-100 p-4 transition-all duration-300 ${
+				} bg-indigo-800 p-4 transition-all duration-300 ${
 					isCollapsed && !isMobileOpen ? "w-16" : "w-64"
 				}`}
 			>
 				<div className="flex items-center justify-between mb-4">
 					{(!isCollapsed || isMobileOpen) && (
-						<h2 className="text-xl font-bold">{title}</h2>
+						<h2 className="text-xl font-bold text-purple-100">{title}</h2>
 					)}
 					<div className="flex items-center gap-2">
 						{/* Close button for mobile */}
 						{isMobileOpen && (
 							<button
 								onClick={() => setIsMobileOpen(false)}
-								className="lg:hidden p-2 hover:bg-gray-200 rounded-lg transition-colors"
+								className="lg:hidden p-2 hover:bg-violet-800 rounded-lg transition-colors"
 								aria-label="Close sidebar"
 							>
 								<svg
@@ -71,11 +71,11 @@ export default function Sidebar({ mode = "forms" }) {
 						{!isMobileOpen && (
 							<button
 								onClick={() => setIsCollapsed(!isCollapsed)}
-								className="hidden lg:block p-2 hover:bg-gray-200 rounded-lg transition-colors"
+								className="hidden lg:block p-2 hover:bg-violet-800 rounded-lg transition-colors"
 								title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
 							>
 								<svg
-									className={`w-5 h-5 transition-transform ${
+									className={`w-5 h-5 transition-transform text-purple-100 ${
 										isCollapsed ? "rotate-180" : ""
 									}`}
 									fill="none"
@@ -99,12 +99,12 @@ export default function Sidebar({ mode = "forms" }) {
 					className={`${isCollapsed && !isMobileOpen ? 'px-2 justify-center' : 'px-4'} py-2 rounded transition-colors flex items-center gap-2 ${
 						isPathActive("thoughts")
 							? "bg-blue-500 text-white"
-							: "bg-white text-gray-700 hover:bg-gray-200"
+							: "bg-indigo-900 text-violet-300 hover:bg-violet-800"
 					}`}
 					title={isCollapsed && !isMobileOpen ? "Thoughts" : ""}
 				>
 					<svg
-						className="w-5 h-5 flex-shrink-0"
+						className="w-5 h-5 shrink-0"
 						fill="none"
 						stroke="currentColor"
 						viewBox="0 0 24 24"
@@ -123,12 +123,12 @@ export default function Sidebar({ mode = "forms" }) {
 					className={`${isCollapsed && !isMobileOpen ? 'px-2 justify-center' : 'px-4'} py-2 rounded transition-colors flex items-center gap-2 ${
 						isPathActive("moods")
 							? "bg-blue-500 text-white"
-							: "bg-white text-gray-700 hover:bg-gray-200"
+							: "bg-indigo-900 text-violet-300 hover:bg-violet-800"
 					}`}
 					title={isCollapsed && !isMobileOpen ? "Moods" : ""}
 				>
 					<svg
-						className="w-5 h-5 flex-shrink-0"
+						className="w-5 h-5 shrink-0"
 						fill="none"
 						stroke="currentColor"
 						viewBox="0 0 24 24"
@@ -147,12 +147,12 @@ export default function Sidebar({ mode = "forms" }) {
 					className={`${isCollapsed ? 'px-2 justify-center' : 'px-4'} py-2 rounded transition-colors flex items-center gap-2 ${
 						isPathActive("habits")
 							? "bg-blue-500 text-white"
-							: "bg-white text-gray-700 hover:bg-gray-200"
+							: "bg-indigo-900 text-violet-300 hover:bg-violet-800"
 					}`}
 					title={isCollapsed ? "Habits" : ""}
 				>
 					<svg
-						className="w-5 h-5 flex-shrink-0"
+						className="w-5 h-5 shrink-0"
 						fill="none"
 						stroke="currentColor"
 						viewBox="0 0 24 24"

@@ -2,6 +2,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { useSidebar } from "../contexts/SidebarContext";
+import { MoonStar } from "lucide-react";
 
 export default function Header() {
 	const navigate = useNavigate();
@@ -9,7 +10,7 @@ export default function Header() {
 	const { isMobileOpen, setIsMobileOpen } = useSidebar();
 
 	const linkClass = (isActive) =>
-		`px-3 py-2 rounded ${isActive ? "bg-white text-black" : "text-white/90 hover:text-white"
+		`sm:px-3 sm:py-2 px-1.5 py-1 rounded ${isActive ? "text-indigo-900 bg-purple-100" : "text-purple-100/90 hover:text-violet-200"
 		}`;
 
 	useEffect(() => {
@@ -51,13 +52,13 @@ export default function Header() {
 	};
 
 	return (
-		<header className="sticky top-0 z-50 bg-primary text-white p-3 sm:p-4 bg-blue-600 shadow-md">
-			<div className="flex items-center justify-between">
-				<div className="flex items-center gap-2 sm:gap-3 flex-1">
+		<header className="sticky top-0 z-50 text-purple-100 p-3 sm:p-4 bg-blue-600 shadow-md h-16">
+			<div className="flex items-center justify-between w-full">
+				<div className="flex items-center gap-2 sm:gap-2 flex-1">
 					{/* Sidebar Toggle Button */}
 					<button
 						onClick={() => setIsMobileOpen(!isMobileOpen)}
-						className="lg:hidden p-2 text-white hover:bg-white/10 rounded transition-colors"
+						className="lg:hidden p-2 text-purple-100 hover:bg-indigo-900/10 rounded transition-colors"
 						aria-label="Toggle sidebar"
 					>
 						<svg
@@ -83,11 +84,17 @@ export default function Header() {
 							)}
 						</svg>
 					</button>
-					<h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">
-						<NavLink to={"/home"}>Eunoia</NavLink>
+					<h1 className="font-['Beau_Rivage'] text-2xl sm:text-3xl lg:text-4xl font-bold">
+						<NavLink
+							to={"/home"}
+							className="flex gap-2"
+						>
+							<MoonStar className="w-auto h-auto text-fuchsia-300" />
+							Eunoia
+						</NavLink>
 					</h1>
 					{username && (
-						<span className="hidden sm:block text-sm sm:text-base lg:text-lg text-white/90">
+						<span className="hidden sm:block text-sm sm:text-base lg:text-lg text-purple-100/90">
 							Welcome, <span className="font-semibold">{username}</span>
 						</span>
 					)}
@@ -95,21 +102,21 @@ export default function Header() {
 
 				{/* Navigation - Always Visible */}
 				<div className="flex items-center gap-2 sm:gap-3 lg:gap-4">
-					<nav className="flex items-center gap-2 sm:gap-3 lg:gap-4">
+					<nav className="flex items-center gap-2 sm:gap-2 lg:gap-4">
+						<NavLink to="/logs" className={({ isActive }) => linkClass(isActive)}>
+							Logs
+						</NavLink>
 						<NavLink
 							to="/dashboard"
 							className={({ isActive }) => linkClass(isActive)}
 						>
 							Dashboard
 						</NavLink>
-						<NavLink to="/logs" className={({ isActive }) => linkClass(isActive)}>
-							Logs
-						</NavLink>
 					</nav>
 
 					<button
 						onClick={handleLogout}
-						className="px-3 py-1.5 sm:px-4 sm:py-2 bg-red-500 hover:bg-red-600 text-white text-sm sm:text-base font-medium rounded transition-colors"
+						className="px-3 py-2 bg-red-500 hover:bg-red-600 text-purple-100 text-sm font-medium rounded transition-colors"
 					>
 						Logout
 					</button>

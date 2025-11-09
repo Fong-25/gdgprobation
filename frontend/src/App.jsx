@@ -23,7 +23,14 @@ import ProtectedRoute from "./components/ProtectedRoute";
 export default function App() {
 	return (
 		<div>
-			<Toaster position="top-right" />
+			<Toaster
+				position="top-right"
+				toastOptions={{
+					style: {
+						pointerEvents: 'none',
+					}
+				}}
+			/>
 			<Router>
 				<Routes>
 					<Route path="/login" element={<Login />} />
