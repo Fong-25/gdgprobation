@@ -59,7 +59,7 @@ export default function HabitsForm() {
 		<div>
 			<form className="mt-4" onSubmit={handleSubmit}>
 				<div className="mb-4">
-					<label className="block text-gray-700">Habit Name:</label>
+					<label className="block text-violet-300">Habit Name:</label>
 					<input
 						type="text"
 						className="w-full px-3 py-2 border rounded"
@@ -72,7 +72,7 @@ export default function HabitsForm() {
 				</div>
 
 				<div className="mb-4">
-					<label className="block text-gray-700">Frequency:</label>
+					<label className="block text-violet-300">Frequency:</label>
 					<select
 						className="w-full px-3 py-2 border rounded"
 						name="frequency"
@@ -96,7 +96,7 @@ export default function HabitsForm() {
 						disabled={submitting}
 						className="mr-2"
 					/>
-					<label htmlFor="isTracked" className="text-gray-700">
+					<label htmlFor="isTracked" className="text-violet-300">
 						Track this habit
 					</label>
 				</div>

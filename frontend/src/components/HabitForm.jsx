@@ -49,17 +49,17 @@ export default function HabitForm({ onHabitAdded }) {
 	};
 
 	return (
-		<div className="bg-white rounded-lg border border-black mt-4 sm:mt-6 lg:mt-0">
-			<div className="bg-gray-50 px-4 sm:px-6 py-3 sm:py-4 border-b border-black">
-				<h3 className="text-lg sm:text-xl font-bold text-black">Add New Habit</h3>
+		<div className="bg-indigo-900 rounded-lg border border-violet-400 mt-4 sm:mt-6 lg:mt-0">
+			<div className="bg-indigo-800 px-4 sm:px-6 py-3 sm:py-4 border-b border-violet-400">
+				<h3 className="text-lg sm:text-xl font-bold text-purple-100">Add New Habit</h3>
 			</div>
 			<div className="p-4 sm:p-6">
 				<form onSubmit={handleFormSubmit}>
 					<div className="mb-3 sm:mb-4">
-						<label className="block text-gray-700 text-sm sm:text-base font-medium mb-1.5 sm:mb-2">Habit Name:</label>
+						<label className="block text-violet-300 text-sm sm:text-base font-medium mb-1.5 sm:mb-2">Habit Name:</label>
 						<input
 							type="text"
-							className="w-full px-3 py-2 text-sm sm:text-base border border-black rounded"
+							className="w-full px-3 py-2 text-sm sm:text-base border border-violet-400 rounded"
 							placeholder="Enter habit name"
 							name="name"
 							value={formData.name}
@@ -70,9 +70,9 @@ export default function HabitForm({ onHabitAdded }) {
 					</div>
 
 					<div className="mb-3 sm:mb-4">
-						<label className="block text-gray-700 text-sm sm:text-base font-medium mb-1.5 sm:mb-2">Frequency:</label>
+						<label className="block text-violet-300 text-sm sm:text-base font-medium mb-1.5 sm:mb-2">Frequency:</label>
 						<select
-							className="w-full px-3 py-2 text-sm sm:text-base border border-black rounded"
+							className="w-full px-3 py-2 text-sm sm:text-base border border-violet-400 rounded"
 							name="frequency"
 							value={formData.frequency}
 							onChange={handleFormChange}
@@ -86,7 +86,7 @@ export default function HabitForm({ onHabitAdded }) {
 
 					<button
 						type="submit"
-						className={`w-full sm:w-auto px-4 py-2 text-sm sm:text-base border border-black rounded ${submitting ? 'bg-gray-200 text-gray-500' : 'bg-black text-white hover:opacity-90'}`}
+						className={`w-full sm:w-auto px-4 py-2 text-sm sm:text-base border border-violet-400 rounded ${submitting ? 'bg-violet-800 text-gray-500' : 'bg-indigo-950 text-white hover:opacity-90'}`}
 						disabled={submitting}
 					>
 						{submitting ? "Adding..." : "Add Habit"}
