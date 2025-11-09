@@ -10,10 +10,8 @@ export default function Dashboard() {
 				<Header />
 				<div className="flex">
 					<Sidebar mode="data" />
-					<main className="flex-1 p-4 sm:p-6 w-full min-w-0">
-						<h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 sm:mb-6 text-black">Dashboard</h2>
-
-						{/* Nested route content will render here */}
+					<main className="flex-1 p-4 sm:p-6 w-full min-w-0 bg-indigo-900">
+						<h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 sm:mb-6 text-purple-100">Dashboard</h2>
 						<Outlet />
 					</main>
 				</div>
