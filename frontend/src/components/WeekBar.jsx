@@ -29,12 +29,14 @@ export default function WeekBar({ currentWeekOffset, setCurrentWeekOffset }) {
 }
 
 function WeekRangeDisplay({ weekDates, isCurrentWeek, setCurrentWeekOffset }) {
-  const weekRange = getWeekRange(weekDates);
+  const { start, end, year } = getWeekRange(weekDates);
+  const startFormatted = start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  const endFormatted = end.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 
   return (
     <div className="text-purple-300 text-center flex-1 sm:flex-none min-w-0 sm:min-w-[200px] lg:min-w-[220px]">
       <div className="text-xs sm:text-sm font-semibold text-purple-100 truncate">
-        {weekRange}
+        {`${startFormatted} - ${endFormatted}, ${year}`}
       </div>
       {isCurrentWeek ? (
         <span className="text-[10px] sm:text-xs  font-medium">
@@ -53,11 +55,11 @@ function WeekRangeDisplay({ weekDates, isCurrentWeek, setCurrentWeekOffset }) {
 }
 
 export const getWeekRange = (weekDates) => {
-  const start = weekDates[0].toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-  const end = weekDates[6].toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  const start = weekDates[0];
+  const end = weekDates[6];
   const year = weekDates[6].getFullYear();
 
-  return `${start} - ${end}, ${year}`;
+  return { start, end, year };
 };
 
 export const getWeekDates = (offset) => {
@@ -68,7 +70,7 @@ export const getWeekDates = (offset) => {
   monday.setDate(
     today.getDate() - (currentDay === 0 ? 6 : currentDay - 1) + offset * 7
   );
-
+  
   return Array.from({ length: 7 }, (_, i) => {
     const date = new Date(monday);
     date.setDate(monday.getDate() + i);

@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { Network, FileText, GitBranch, Check, X, Pencil, Trash2  } from 'lucide-react';
 import WeekBar from './WeekBar';
-import { getWeekRange } from './WeekBar';
+import { getWeekRange, getWeekDates } from './WeekBar';
 import CardNoIcon from './CardNoIcon';
 import IconButton from './IconButton';
 import { data as fallbackData } from '../data';
@@ -395,7 +395,7 @@ export default function ThoughtsData() {
   }, []);
 
   useEffect(() => {
-    const { start, end } = getWeekRange(weekOffset);
+    const { start, end } = getWeekRange(getWeekDates(weekOffset));
     const weekThoughts = thoughts.filter(t => {
       const d = new Date(t.created_at || t.createdAt || t.createdAt);
       return d >= start && d <= end;
