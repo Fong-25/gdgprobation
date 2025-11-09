@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { Network, FileText, GitBranch, Check, X, Pencil, Trash2  } from 'lucide-react';
 import WeekBar from './WeekBar';
+import { getWeekRange } from './WeekBar';
 import CardNoIcon from './CardNoIcon';
 import IconButton from './IconButton';
 import { data as fallbackData } from '../data';
@@ -343,17 +344,6 @@ export default function ThoughtsData() {
   const [editingId, setEditingId] = useState(null);
   const [editText, setEditText] = useState('');
 
-  const getWeekRange = (offset = 0) => {
-    const now = new Date();
-    const day = (now.getDay() + 6) % 7;
-    const monday = new Date(now);
-    monday.setDate(now.getDate() - day + offset * 7);
-    monday.setHours(0, 0, 0, 0);
-    const sunday = new Date(monday);
-    sunday.setDate(monday.getDate() + 6);
-    sunday.setHours(23, 59, 59, 999);
-    return { start: monday, end: sunday };
-  };
   const analysis = useMemo(() => {
     const closedClassWords = new Set(['the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'is']);
     const words = text.toLowerCase().match(/\b\w+\b/g) || [];

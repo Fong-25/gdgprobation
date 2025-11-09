@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Heart, TrendingUp, Trash2 } from 'lucide-react';
 import { ResponsiveLine } from '@nivo/line';
 import WeekBar from './WeekBar';
+import { getWeekDates } from './WeekBar';
 import IconButton from './IconButton';
 import toast from 'react-hot-toast';
 import CardNoIcon from './CardNoIcon';
@@ -225,23 +226,6 @@ export default function MoodsData() {
   const [moods, setMoods] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentWeekOffset, setCurrentWeekOffset] = useState(0);
-
-	const getWeekDates = (offset) => {
-		const today = new Date();
-		const currentDay = today.getDay();
-		const monday = new Date(today);
-		monday.setDate(
-			today.getDate() - (currentDay === 0 ? 6 : currentDay - 1) + offset * 7
-		);
-
-		const weekDates = [];
-		for (let i = 0; i < 7; i++) {
-			const date = new Date(monday);
-			date.setDate(monday.getDate() + i);
-			weekDates.push(date);
-		}
-		return weekDates;
-	};
 
   const handleDeleteMood = async (moodId) => {
     if (!confirm('Are you sure you want to delete this mood entry?'))

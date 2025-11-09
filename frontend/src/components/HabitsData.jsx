@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { FileText } from "lucide-react";
 import WeekBar from "./WeekBar";
+import { getWeekDates } from "./WeekBar";
 import { Pencil, Trash2 } from 'lucide-react';
 import IconButton from "./IconButton";
 
@@ -23,24 +24,6 @@ export default function HabitsData() {
 		{ short: "Sat", full: "Saturday" },
 		{ short: "Sun", full: "Sunday" },
 	];
-
-	// Get week dates based on offset
-	const getWeekDates = (offset) => {
-		const today = new Date();
-		const currentDay = today.getDay(); // 0 = Sunday, 1 = Monday, etc.
-		const monday = new Date(today);
-		monday.setDate(
-			today.getDate() - (currentDay === 0 ? 6 : currentDay - 1) + offset * 7
-		);
-
-		const weekDates = [];
-		for (let i = 0; i < 7; i++) {
-			const date = new Date(monday);
-			date.setDate(monday.getDate() + i);
-			weekDates.push(date);
-		}
-		return weekDates;
-	};
 
 	const weekDates = getWeekDates(currentWeekOffset);
 

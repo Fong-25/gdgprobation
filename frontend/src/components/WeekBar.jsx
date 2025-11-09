@@ -2,22 +2,6 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import IconButton from './IconButton';
 
 export default function WeekBar({ currentWeekOffset, setCurrentWeekOffset }) {
-	const getWeekDates = (offset) => {
-		const today = new Date();
-		const currentDay = today.getDay();
-
-		const monday = new Date(today);
-		monday.setDate(
-			today.getDate() - (currentDay === 0 ? 6 : currentDay - 1) + offset * 7
-		);
-
-		return Array.from({ length: 7 }, (_, i) => {
-			const date = new Date(monday);
-			date.setDate(monday.getDate() + i);
-			return date;
-		});
-	};
-
   const weekDates = getWeekDates(currentWeekOffset);
   const isCurrentWeek = currentWeekOffset === 0;
 
@@ -45,14 +29,6 @@ export default function WeekBar({ currentWeekOffset, setCurrentWeekOffset }) {
 }
 
 function WeekRangeDisplay({ weekDates, isCurrentWeek, setCurrentWeekOffset }) {
-	const getWeekRange = (weekDates) => {
-		const start = weekDates[0].toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-		const end = weekDates[6].toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-		const year = weekDates[6].getFullYear();
-
-  	return `${start} - ${end}, ${year}`;
-	};
-
   const weekRange = getWeekRange(weekDates);
 
   return (
@@ -75,3 +51,27 @@ function WeekRangeDisplay({ weekDates, isCurrentWeek, setCurrentWeekOffset }) {
     </div>
   );
 }
+
+export const getWeekRange = (weekDates) => {
+  const start = weekDates[0].toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  const end = weekDates[6].toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  const year = weekDates[6].getFullYear();
+
+  return `${start} - ${end}, ${year}`;
+};
+
+export const getWeekDates = (offset) => {
+  const today = new Date();
+  const currentDay = today.getDay();
+
+  const monday = new Date(today);
+  monday.setDate(
+    today.getDate() - (currentDay === 0 ? 6 : currentDay - 1) + offset * 7
+  );
+
+  return Array.from({ length: 7 }, (_, i) => {
+    const date = new Date(monday);
+    date.setDate(monday.getDate() + i);
+    return date;
+  });
+};
