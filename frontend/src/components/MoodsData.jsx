@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Heart, TrendingUp, Trash2 } from 'lucide-react';
 import { ResponsiveLine } from '@nivo/line';
-import WeekBar from './WeekBar';
+import CardWeek from './CardWeek';
 import { getWeekDates } from './WeekBar';
 import IconButton from './IconButton';
 import toast from 'react-hot-toast';
@@ -289,21 +289,12 @@ export default function MoodsData() {
     <div className="min-h-screen bg-indigo-900 p-4 sm:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
 
-        <div className="bg-indigo-900 p-4 sm:p-6 rounded-lg mb-4 sm:mb-6 border border-violet-400">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
-            <div>
-              <h3 className="text-xl sm:text-2xl font-bold text-purple-100 mb-1">
-                Your Moods
-              </h3>
-              <p className="text-xs sm:text-sm text-violet-300">
-                Click anywhere on the grid to log your current mood
-              </p>
-            </div>
-            <div className="w-full sm:w-auto">
-              <WeekBar currentWeekOffset={currentWeekOffset} setCurrentWeekOffset={setCurrentWeekOffset} />
-            </div>
-          </div>
-        </div>
+        <CardWeek
+          title="Your Moods"
+          icon={Heart}
+          currentWeekOffset={currentWeekOffset}
+          setCurrentWeekOffset={setCurrentWeekOffset}
+        />
 
         <div className="grid grid-cols-1 gap-4 sm:gap-6">
           <MoodTrendChart filteredMoods={filteredMoods} />

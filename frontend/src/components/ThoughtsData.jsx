@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { Network, FileText, GitBranch, Check, X, Pencil, Trash2  } from 'lucide-react';
-import WeekBar from './WeekBar';
 import { getWeekRange, getWeekDates } from './WeekBar';
+import CardWeek from './CardWeek';
 import CardNoIcon from './CardNoIcon';
 import IconButton from './IconButton';
 import { data as fallbackData } from '../data';
@@ -125,16 +125,12 @@ export default function ThoughtsData() {
   return (
     <div className="min-h-screen bg-indigo-900 text-purple-100 p-4 sm:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
-        <div className="bg-indigo-900 rounded-lg shadow p-4 sm:p-6 lg:p-8 mb-4 sm:mb-6 border border-violet-400">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 mb-4 sm:mb-6">
-            <div className="flex items-center gap-2 sm:gap-3">
-              <Network />
-              <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold">Thoughts Network Graph</h1>
-            </div>
-            <div className="w-full sm:w-auto">
-              <WeekBar currentWeekOffset={weekOffset} setCurrentWeekOffset={setWeekOffset} />
-            </div>
-          </div>
+        <CardWeek
+          title="Thoughts Network Graph"
+          icon={Network}
+          currentWeekOffset={weekOffset}
+          setCurrentWeekOffset={setWeekOffset}
+        >
           <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-4 sm:mb-6">
             <CardNoIcon
               value={analysis.totalWords}
@@ -145,16 +141,17 @@ export default function ThoughtsData() {
               label="Unique Words"
             />
           </div>
-        </div>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
-          <NetworkGraph nodes={nodes} edges={edges} />
-          <TopConnections topPairs={topPairs} />
-        </div>
-        <AllThoughts
-          thoughts={thoughts}
-          setThoughts={setThoughts}
-        />
+        </CardWeek>
       </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+        <NetworkGraph nodes={nodes} edges={edges} />
+        <TopConnections topPairs={topPairs} />
+      </div>
+      <AllThoughts
+        thoughts={thoughts}
+        setThoughts={setThoughts}
+      />
     </div>
   );
 }

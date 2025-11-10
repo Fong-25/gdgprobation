@@ -16,7 +16,7 @@ export default function CardWeek({ title, description, icon: Icon, currentWeekOf
           setCurrentWeekOffset={setCurrentWeekOffset}
         />
       </div>
-      {children && <div>{children}</div>}
+      {children && <div className="mt-6">{children}</div>}
     </div>
   );
 }
