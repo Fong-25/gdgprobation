@@ -56,7 +56,6 @@ export default function HabitsData() {
 					habitsMap.get(habit.id).progressByDate[date] = habit.progress;
 				});
 			});
-			console.log(Array.from(habitsMap.values()))
 			setHabits(Array.from(habitsMap.values()));
 		} catch (error) {
 			console.error("Fetch habits error:", error);
