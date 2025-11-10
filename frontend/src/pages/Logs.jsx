@@ -180,7 +180,7 @@ function FormInput({ name, value, onChange, placeholder, disabled }) {
         value={value}
         onChange={onChange}
         placeholder={placeholder}
-        className="text-violet-600 w-full px-3 py-2 border border-violet-400 rounded focus:outline-none focus:ring-2 focus:ring-violet-500"
+        className="text-violet-100 w-full px-3 py-2 border border-violet-400 rounded focus:outline-none focus:ring-2 focus:ring-violet-500"
         disabled={disabled}
       />
     </div>

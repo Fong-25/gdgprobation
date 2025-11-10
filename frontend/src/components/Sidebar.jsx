@@ -49,7 +49,7 @@ export default function Sidebar({ mode = "forms" }) {
 						{isMobileOpen && (
 							<button
 								onClick={() => setIsMobileOpen(false)}
-								className="lg:hidden p-2 hover:bg-violet-800 rounded-lg transition-colors"
+								className="text-purple-100 lg:hidden p-2 hover:bg-violet-800 rounded-lg transition-colors"
 								aria-label="Close sidebar"
 							>
 								<svg
