@@ -4,11 +4,25 @@ Eunoia is a full-stack web application designed for personal wellness and self-c
 
 ## Key Features
 
+### Authentication
+
 - **Secure Authentication**: Standard user signup and login system using JWTs stored in secure, httpOnly cookies. Passwords are hashed using bcrypt.
-- **Habit Tracking**: Create and manage daily, weekly, or monthly habits. Track completion with a 4-level progress system (0%, 33%, 66%, 100%) on a weekly calendar grid.
-- **Mood Journaling**: Log your mood on an interactive 2D plane (Calmness vs. Happiness). View your mood history as plotted points and a time-series line chart.
-- **Thought Network**: Record short, 5-word thoughts. The app generates a dynamic, interactive force-directed graph to visualize the co-occurrence and connections between the words in your thoughts.
-- **Data History**: A separate "Logs" view provides a complete chronological history of all thoughts, moods, and habits ever entered.
+
+### Data Entry ("Logs" Page)
+
+A dedicated page to quickly add new entries:
+
+- **Thought Logging**: Record short, 5-word thoughts via a simple form.
+- **Mood Logging**: Log your mood on an interactive 2D plane (Calmness vs. Happiness).
+- **Habit Creation**: Add new habits you want to track.
+
+### Data Visualization ("Dashboard" Page)
+
+A multi-tab dashboard to see your patterns over time:
+
+- **Habit Tracking**: Create and manage habits. Track completion with a 4-level progress system (0%, 33%, 66%, 100%) on a weekly calendar grid.
+- **Mood Journaling**: View your mood history as plotted points and a time-series line chart to see trends. Includes a list of all historical mood entries.
+- **Thought Network**: Record short thoughts. The app generates a dynamic, interactive force-directed graph to visualize the co-occurrence and connections between the words in your thoughts. Includes a list of all historical thoughts.
 
 ## Tech Stack
 
