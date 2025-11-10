@@ -2,7 +2,6 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import { useSidebar } from "../contexts/SidebarContext";
-import { MoonStar } from "lucide-react";
 
 export default function Header() {
 	const navigate = useNavigate();
@@ -89,7 +88,7 @@ export default function Header() {
 							to={"/home"}
 							className="flex gap-2"
 						>
-							<MoonStar className="w-auto h-auto text-fuchsia-300" />
+							<img className="h-8" src="/public/eunoia.svg" alt="Eunoia" />
 							Eunoia
 						</NavLink>
 					</h1>
