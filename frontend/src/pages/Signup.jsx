@@ -30,6 +30,7 @@ export default function SignUp() {
         `${import.meta.env.VITE_API_URL}${endpoint}`,
         {
           method: "POST",
+          credentials: "include",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
         }
@@ -60,7 +61,7 @@ export default function SignUp() {
 
     if (ok) {
       toast.success("Account created successfully!");
-      navigate("/login");
+      navigate("/dashboard");
     } else {
       toast.error(data.message || "Signup failed");
     }
