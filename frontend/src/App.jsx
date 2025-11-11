@@ -9,7 +9,6 @@ import {
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
-import Home from "./pages/Home";
 import Logs from "./pages/Logs";
 import { Toaster } from "react-hot-toast";
 
@@ -55,12 +54,6 @@ export default function App() {
 					} />
 					{/* Redirect any old /logs/* routes to /logs */}
 					<Route path="/logs/*" element={<Navigate to="/logs" replace />} />
-					{/* <Route path="/home" element={
-						<ProtectedRoute >
-							<Home />
-						</ProtectedRoute>
-					}
-					/> */}
 					<Route path="/" element={<Navigate to="/dashboard/thoughts" replace />} />
 				</Routes>
 			</Router>

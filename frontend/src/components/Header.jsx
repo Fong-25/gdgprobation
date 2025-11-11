@@ -85,7 +85,7 @@ export default function Header() {
 					</button>
 					<h1 className="font-['Beau_Rivage'] text-2xl sm:text-3xl lg:text-4xl font-bold">
 						<NavLink
-							to={"/home"}
+							to={"/dashboard"}
 							className="flex gap-2"
 						>
 							<img className="h-8" src="/public/eunoia.svg" alt="Eunoia" />
