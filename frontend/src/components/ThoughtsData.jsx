@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
-import { Network, FileText, GitBranch, Check, X, Pencil, Trash2  } from 'lucide-react';
+import { Network, FileText, GitBranch, Check, X, Pencil, Trash2 } from 'lucide-react';
 import { getWeekRange, getWeekDates } from './WeekBar';
 import CardWeek from './CardWeek';
 import CardNoIcon from './CardNoIcon';
@@ -19,7 +19,7 @@ export default function ThoughtsData() {
 
   const analysis = useMemo(() => {
     const closedClassWords = new Set(['the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'is']);
-    const words = text.toLowerCase().match(/\b\w+\b/g) || [];
+    const words = text.toLowerCase().match(/[^\s.,!?;:()"'`]+/g) || [];
     const filteredWords = words.filter(w => !closedClassWords.has(w));
     const wordFrequencies = new Map();
     for (const word of filteredWords) {
@@ -86,13 +86,14 @@ export default function ThoughtsData() {
       .map(([word]) => word);
 
     const newNodes = filteredWords.map((word) => {
+      const wordStr = String(word);
       const textWidth = ctx.measureText(word).width;
       const minSize = (textWidth / 2) + 8;
       const frequencyBonus = (analysis.wordFrequencies.get(word) || 1) * 2;
       const circleSize = Math.max(minSize, 15 + frequencyBonus);
 
       return {
-        word,
+        word: wordStr,
         x: 0,
         y: 0,
         vx: 0,
