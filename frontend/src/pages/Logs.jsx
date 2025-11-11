@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Header from "../components/Header";
 import { toast } from "react-hot-toast";
 import { MessageSquare, Heart, CheckSquare } from "lucide-react";
@@ -6,6 +6,9 @@ import { SidebarProvider } from "../contexts/SidebarContext";
 import MoodGrid from "../components/MoodGrid";
 
 export default function Logs() {
+  useEffect(() => {
+    document.title = 'Eunoia - Logs'
+  }, [])
   return (
     <SidebarProvider>
       <div>

@@ -2,8 +2,12 @@ import { Outlet } from "react-router-dom";
 import Header from "../components/Header.jsx";
 import Sidebar from "../components/Sidebar.jsx";
 import { SidebarProvider } from "../contexts/SidebarContext";
+import { useEffect } from "react";
 
 export default function Dashboard() {
+	useEffect(() => {
+		document.title = 'Eunoia - Dashboard'
+	}, [])
 	return (
 		<SidebarProvider>
 			<div>

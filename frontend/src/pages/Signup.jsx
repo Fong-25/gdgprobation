@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { UserPlus, Mail, Lock, User } from "lucide-react";
@@ -15,6 +15,9 @@ const signupFields = [
 ];
 
 export default function SignUp() {
+  useEffect(() => {
+    document.title = 'Sign up'
+  }, [])
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     username: "",
