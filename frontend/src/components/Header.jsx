@@ -15,7 +15,7 @@ export default function Header() {
 	useEffect(() => {
 		const fetchCurrentUser = async () => {
 			try {
-				const response = await fetch("http://localhost:5000/api/auth/me", {
+				const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/me`, {
 					credentials: "include",
 				});
 
@@ -33,7 +33,7 @@ export default function Header() {
 
 	const handleLogout = async () => {
 		try {
-			const response = await fetch("http://localhost:5000/api/auth/logout", {
+			const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/logout`, {
 				method: "POST",
 				credentials: "include",
 			});
@@ -88,7 +88,7 @@ export default function Header() {
 							to={"/dashboard"}
 							className="flex gap-2"
 						>
-							<img className="h-8" src="/public/eunoia.svg" alt="Eunoia" />
+							<img className="h-8" src="/eunoia.svg" alt="Eunoia" />
 							Eunoia
 						</NavLink>
 					</h1>
