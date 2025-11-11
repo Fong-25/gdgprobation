@@ -16,7 +16,7 @@ const app = express()
 const __dirname = path.resolve()
 
 app.use(cors({
-    origin: 'http://localhost:5173',
+    origin: ['http://localhost:5173', 'https://gdg-eunoia.onrender.com'],
     credentials: true,
 }));
 
